@@ -30,7 +30,7 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 "'"({C})"'" 														printf("hola\n");
 
-\"({SC})*\"														printf("shieeet");
+\"({SC})*\"															printf("shieeet");
 
 {W}																	/*Nothing*/
 
