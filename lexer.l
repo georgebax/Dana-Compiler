@@ -16,6 +16,7 @@ void error_handler();
 /*----------------------------------------Variables----------------------------------------------------------------------------------------------------------------------*/
 int number_of_lines = 0;
 int number_of_errors = 0;
+int comment_depth = 0;
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %}
@@ -51,9 +52,9 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 "#"                                                             printf( "Start of one line comment\n" );
 
-"(*" 															printf( "Start of many lines comment\n" );
+"(*" 															{ printf( "Start of many lines comment\n" ); comment_depth++; }
 
-"*)"                                                            printf( "End of many lines comment\n" );
+"*)"                                                            { printf( "End of many lines comment\n" ); comment_depth--; if ( comment_depth == 0 ) puts( "Comments Closed!" );}
 
 "+"																printf( "Plus Token\n" );
 

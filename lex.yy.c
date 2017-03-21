@@ -560,9 +560,10 @@ void error_handler();
 /*----------------------------------------Variables----------------------------------------------------------------------------------------------------------------------*/
 int number_of_lines = 0;
 int number_of_errors = 0;
+int comment_depth = 0;
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-#line 566 "lex.yy.c"
+#line 567 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -780,10 +781,10 @@ YY_DECL
 		}
 
 	{
-#line 33 "lexer.l"
+#line 34 "lexer.l"
 
 
-#line 787 "lex.yy.c"
+#line 788 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -842,182 +843,182 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 35 "lexer.l"
+#line 36 "lexer.l"
 printf( "keyword = %s\n" , yytext );
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 37 "lexer.l"
+#line 38 "lexer.l"
 { /*007->7*/ printf( "integer = %s\n" , yytext ); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 39 "lexer.l"
+#line 40 "lexer.l"
 printf( "identifier = %s\n", yytext );
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 41 "lexer.l"
+#line 42 "lexer.l"
 number_of_lines++;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 43 "lexer.l"
-printf( "Hexademical Number = h%s\n", yytext );
+#line 44 "lexer.l"
+printf( "Hexademical Number = H%s\n", yytext );
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 45 "lexer.l"
+#line 46 "lexer.l"
 printf( "Escape Character = %s\n" , yytext );
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 48 "lexer.l"
 printf( "Single Character = %s\n" , yytext );
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 50 "lexer.l"
 printf( "String = %s\n",yytext );
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 52 "lexer.l"
+#line 53 "lexer.l"
 printf( "Start of one line comment\n" );
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 54 "lexer.l"
-printf( "Start of many lines comment\n" );
+#line 55 "lexer.l"
+{ printf( "Start of many lines comment\n" ); comment_depth++; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 56 "lexer.l"
-printf( "End of many lines comment\n" );
+#line 57 "lexer.l"
+{ printf( "End of many lines comment\n" ); comment_depth--; if ( comment_depth == 0 ) puts( "Comments Closed!" );}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 58 "lexer.l"
+#line 59 "lexer.l"
 printf( "Plus Token\n" );
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 60 "lexer.l"
+#line 61 "lexer.l"
 printf( "Minus Token\n" );
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 62 "lexer.l"
+#line 63 "lexer.l"
 printf( "Multiply Token\n" );
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 64 "lexer.l"
+#line 65 "lexer.l"
 printf( "Division Token\n" );
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 66 "lexer.l"
+#line 67 "lexer.l"
 printf( "Modulo Token\n" );
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 68 "lexer.l"
+#line 69 "lexer.l"
 printf( "Logical Not Token\n" );
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 70 "lexer.l"
+#line 71 "lexer.l"
 printf( "Logical And Token\n" );
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 72 "lexer.l"
+#line 73 "lexer.l"
 printf( "Logical Or Token\n" );
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 74 "lexer.l"
+#line 75 "lexer.l"
 printf( "Equal Token\n" );
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 76 "lexer.l"
+#line 77 "lexer.l"
 printf( "Not Equal Token\n" );
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 78 "lexer.l"
+#line 79 "lexer.l"
 printf( "Less Than Token\n" );
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 80 "lexer.l"
+#line 81 "lexer.l"
 printf( "Greater Than Token\n" );
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 82 "lexer.l"
+#line 83 "lexer.l"
 printf( "Less or Equal Token\n" );
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 84 "lexer.l"
+#line 85 "lexer.l"
 printf( "Greater or Equal Token\n" );
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 86 "lexer.l"
+#line 87 "lexer.l"
 printf( "Left Parenthesis\n" );
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 88 "lexer.l"
+#line 89 "lexer.l"
 printf( "Right Parenthesis\n" );
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 90 "lexer.l"
+#line 91 "lexer.l"
 printf( "Left Bracket\n" );
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 92 "lexer.l"
+#line 93 "lexer.l"
 printf( "Right Bracket\n" );
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 94 "lexer.l"
+#line 95 "lexer.l"
 printf( "Comma\n" );
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 96 "lexer.l"
+#line 97 "lexer.l"
 printf( "Colon\n" );
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 98 "lexer.l"
+#line 99 "lexer.l"
 printf( "Assignment\n" );
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 101 "lexer.l"
+#line 102 "lexer.l"
 /*Nothing*/
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 103 "lexer.l"
+#line 104 "lexer.l"
 { number_of_errors++; error_handler( yytext , number_of_lines ); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 105 "lexer.l"
+#line 106 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1021 "lex.yy.c"
+#line 1022 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2018,7 +2019,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 105 "lexer.l"
+#line 106 "lexer.l"
 
 
 
