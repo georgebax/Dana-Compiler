@@ -23,10 +23,12 @@ int number_of_errors = 0;
 L [A-Za-z]
 D [0-9]
 W [ \t\n]
-C [^'"\\]
+C [^'"\\\n]
 HEX [0-9|A-F|a-f] 	
-ESC \\(n|t|r|0|\\|\'|\"|x{HEX}{HEX})
-SC [^\n] 
+HEN \\x{HEX}{HEX}
+ESC \\(n|t|r|0|\\|\'|\")
+SC [^\n\"]  
+QC [\\\"]
 
 %%
 
@@ -37,6 +39,8 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 {L}({L}|{D}|"_")*												printf( "identifier = %s\n", yytext );
 
 \n																number_of_lines++;
+
+\'{HEN}\'														printf( "Hexademical Number = h%s\n", yytext );
 
 \'{ESC}\'														printf( "Escape Character = %s\n" , yytext );
 
