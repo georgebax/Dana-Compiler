@@ -40,7 +40,7 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 \n																number_of_lines++;
 
-\'{HEN}\'														printf( "Hexademical Number = h%s\n", yytext );
+\'{HEN}\'														printf( "Hexademical Number = H%s\n", yytext );
 
 \'{ESC}\'														printf( "Escape Character = %s\n" , yytext );
 
