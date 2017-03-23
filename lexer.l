@@ -23,7 +23,6 @@ int comment_depth = 0;
 
 L [A-Za-z]
 D [0-9]
-W [ \t\n]
 C [^'"\\\n]
 HEX [0-9|A-F|a-f] 	
 HEN \\x{HEX}{HEX}
@@ -37,9 +36,9 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 {D}+	 														{ /*007->7*/ printf( "integer = %s\n" , yytext ); }
 
-{L}({L}|{D}|"_")*													printf( "identifier = %s\n", yytext );
+{L}({L}|{D}|"_")*												printf( "identifier = %s\n", yytext );
 
-\n															number_of_lines++;
+\n																number_of_lines++;
 
 \'{HEN}\'														printf( "Hexademical Number = H%s\n", yytext );
 
@@ -47,14 +46,13 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 \'({C})\' 											  			printf( "Single Character = %s\n" , yytext );
 
-\"({QC}|{SC})*\"													printf( "String = %s\n",yytext );
+\"({QC}|{SC})*\"												printf( "String = %s\n",yytext );
 
-
-"#"               								                                        printf( "Start of one line comment\n" );
+"#"									                        	printf( "Start of one line comment\n" );
 
 "(*" 															{ printf( "Start of many lines comment\n" ); comment_depth++; }
 
-"*)"  				                                                          { printf( "End of many lines comment\n" ); comment_depth--; if ( comment_depth == 0 ) puts( "Comments Closed!" );}
+"*)"  				                                            { printf( "End of many lines comment\n" ); comment_depth--; if ( comment_depth == 0 ) puts( "Comments Closed!" );}
 
 "+"																printf( "Plus Token\n" );
 
@@ -62,7 +60,7 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 "*"																printf( "Multiply Token\n" );
 
-"/"                                 								                            printf( "Division Token\n" );
+"/"                                 		                    printf( "Division Token\n" );
 
 "%"                                                             printf( "Modulo Token\n" );
 
@@ -97,9 +95,6 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 ":"																printf( "Colon\n" );
 
 ":="															printf( "Assignment\n" );
-
-
-{W}																/*Nothing*/
 
 .																{ number_of_errors++; error_handler( yytext , number_of_lines ); }
 
