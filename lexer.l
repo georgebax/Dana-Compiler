@@ -1,22 +1,31 @@
 %{
 
+
+/*----------------------------------------To-do---------------------------------------------------------------------------------------------------------------------------
+> instead of printf, we got to return something  (T_*) (??)
+> fix ints ( 007 -> 7)
+> push error codes to some struct?
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-
-/*-----------------------------------------Function Declarations---------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 void error_handler();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
 
 
 /*----------------------------------------Variables----------------------------------------------------------------------------------------------------------------------*/
 int number_of_lines = 0;
 int number_of_errors = 0;
 int comment_depth = 0;
+int indentation_depth = 0;
+char hex_num[3];
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %}
@@ -29,18 +38,63 @@ HEN \\x{HEX}{HEX}
 ESC \\(n|t|r|0|\\|\'|\")
 SC [^\n\"]  
 QC \\(\")
+W [ ]
 
 %%
 
-and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loop|not|or|ref|return|skip|true|var	printf( "keyword = %s\n" , yytext );
+begin 															printf( "Begin statement, indentation depth increased to %d\n", ++indentation_depth );
 
-{D}+	 														{ /*007->7*/ printf( "integer = %s\n" , yytext ); }
+end 															printf( "End statement, indentation depth decreased to %d\n", --indentation_depth );
+
+and                                                             printf( "And statement\n" );
+
+as                                                             	printf( "As statement\n" );
+
+break                                                           printf( "Break statement\n" );
+
+byte                                                            printf( "Byte statement\n" );
+
+continue                                                        printf( "Continue statement\n" );
+
+decl                                                            printf( "Decl statement\n" );
+
+elif                                                            printf( "Elif statement\n" );
+
+else                                                            printf( "Else statement\n" );
+
+exit                                                            printf( "Exit statement\n" );
+
+false															printf( "False statement\n" );
+
+if                                                              printf( "If statement\n" );
+
+is                                                              printf( "Is statement\n" );
+
+int                                                             printf( "Int statement\n" );
+
+loop                                                            printf( "Loop statement\n" );
+
+not                                                             printf( "Not statement\n" );
+
+or                                                              printf( "Or statement\n" );
+
+ref                                                             printf( "Ref statement\n" );
+
+return                                                          printf( "Return statement\n" );
+
+skip                                                            printf( "Skip statement\n" );
+
+true                                                            printf( "True statement\n" );
+
+var                                                             printf( "Var statement\n" );
+
+{D}+	 														printf( "integer = %s\n" , yytext ); 
 
 {L}({L}|{D}|"_")*												printf( "identifier = %s\n", yytext );
 
 \n																number_of_lines++;
 
-\'{HEN}\'														printf( "Hexademical Number = H%s\n", yytext );
+\'{HEN}\'														printf( "Hexademical Number = H%s\n", strncpy(hex_num, yytext + 3, 2) );
 
 \'{ESC}\'														printf( "Escape Character = %s\n" , yytext );
 
@@ -52,7 +106,9 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 "(*" 															{ printf( "Start of many lines comment\n" ); comment_depth++; }
 
-"*)"  				                                            { printf( "End of many lines comment\n" ); comment_depth--; if ( comment_depth == 0 ) puts( "Comments Closed!" );}
+"*)"  				                                            { printf( "End of many lines comment\n" ); 
+																	comment_depth--; 
+																	if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 
 "+"																printf( "Plus Token\n" );
 
@@ -96,10 +152,11 @@ and|as|begin|break|byte|continue|decl|def|elif|else|end|exit|false|if|is|int|loo
 
 ":="															printf( "Assignment\n" );
 
+{W}																/* do nothing! */ 
+
 .																{ number_of_errors++; error_handler( yytext , number_of_lines ); }
 
 %%
-
 
 void error_handler(char *error , int n) {
         printf( "Error in line %d : %s\n" , n , error );
