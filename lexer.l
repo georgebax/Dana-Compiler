@@ -11,7 +11,8 @@
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+#include <string.h>
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
@@ -41,15 +42,17 @@ W [ ]
 
 %%
 
-begin 															printf( "Begin statement, indentation depth increased to %d\n", ++indentation_depth );
+begin 								printf( "Begin statement, indentation depth increased to %d\n", ++indentation_depth );
 
-end 															printf( "End statement, indentation depth decreased to %d\n", --indentation_depth );
+end 								printf( "End statement, indentation depth decreased to %d\n", --indentation_depth );
 
 and                                                             printf( "And statement\n" );
 
 as                                                             	printf( "As statement\n" );
 
 break                                                           printf( "Break statement\n" );
+
+def								printf( "Def statement\n" );
 
 byte                                                            printf( "Byte statement\n" );
 
@@ -63,7 +66,7 @@ else                                                            printf( "Else st
 
 exit                                                            printf( "Exit statement\n" );
 
-false															printf( "False statement\n" );
+false								printf( "False statement\n" );
 
 if                                                              printf( "If statement\n" );
 
@@ -87,35 +90,38 @@ true                                                            printf( "True st
 
 var                                                             printf( "Var statement\n" );
 
-{D}+	 														printf( "integer = %d\n" , atoi(yytext) ); 
+{D}+	 							printf( "integer = %d\n" , atoi(yytext) ); 
 
-{L}({L}|{D}|"_")*												printf( "identifier = %s\n", yytext );
+{L}({L}|{D}|"_")*						printf( "identifier = %s\n", yytext );
 
-\n																number_of_lines++;
+\n								number_of_lines++;
 
-\'{HEN}\'														printf( "Hexademical Number = H%s\n", strncpy(hex_num, yytext + 3, 2) );
+\'{HEN}\'							printf( "Hexademical Number = H%s\n", strncpy(hex_num, yytext + 3, 2) );
 
-\'{ESC}\'														printf( "Escape Character = %s\n" , yytext );
+\'{ESC}\'							printf( "Escape Character = %s\n" , yytext );
 
-\'({C})\' 											  			printf( "Single Character = %s\n" , yytext );
+\'({C})\' 							printf( "Single Character = %s\n" , yytext );
 
-\"({QC}|{SC})*\"												printf( "String = %s\n",yytext );
+\"({QC}|{SC})*\"						printf( "String = %s\n",yytext );
 
-"#"									                        	printf( "Start of one line comment\n" );
+"#"				                        	printf( "Start of one line comment\n" );
 
-"(*" 															{ printf( "Start of many lines comment\n" ); comment_depth++; }
+"(*" 								{ printf( "Start of many lines comment\n" ); comment_depth++; }
 
-"*)"  				                                            { printf( "End of many lines comment\n" ); 
-																	comment_depth--; 
-																	if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 
-"+"																printf( "Plus Token\n" );
+"*)"  				                                { printf( "End of many lines comment\n" ); 
+								comment_depth--; 
+								if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 
-"-"																printf( "Minus Token\n" );
 
-"*"																printf( "Multiply Token\n" );
+"+"								printf( "Plus Token\n" );
 
-"/"                                 		                    printf( "Division Token\n" );
+
+"-"								printf( "Minus Token\n" );
+
+"*"								printf( "Multiply Token\n" );
+
+"/"                             		                printf( "Division Token\n" );
 
 "%"                                                             printf( "Modulo Token\n" );
 
@@ -137,23 +143,23 @@ var                                                             printf( "Var sta
 
 ">="                                                            printf( "Greater or Equal Token\n" );
 
-"("																printf( "Left Parenthesis\n" );
+"("								printf( "Left Parenthesis\n" );
 
-")"																printf( "Right Parenthesis\n" );
+")"								printf( "Right Parenthesis\n" );
 
-"["																printf( "Left Bracket\n" );
+"["								printf( "Left Bracket\n" );
 
-"]"																printf( "Right Bracket\n" );
+"]"								printf( "Right Bracket\n" );
 
-","																printf( "Comma\n" );
+","								printf( "Comma\n" );
 
-":"																printf( "Colon\n" );
+":"								printf( "Colon\n" );
 
-":="															printf( "Assignment\n" );
+":="								printf( "Assignment\n" );
 
-{W}																/* do nothing! */ 
+{W}								/* do nothing! */ 
 
-.																{ number_of_errors++; error_handler( yytext , number_of_lines ); }
+.								{ number_of_errors++; error_handler( yytext , number_of_lines ); }
 
 %%
 
