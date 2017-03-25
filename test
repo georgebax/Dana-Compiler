@@ -1,18 +1,21 @@
-def main
-def prime is byte: n as int
-var i is int
-if n < 0:
-return: prime(-n)
-elif n < 2:
-return: false
-elif n = 2:
-return: true
-elif n % 2 = 0: return: false
-else:
-i := 3
-loop:
-if i > n / 2:
-break
-elif n % i = 0: return: false
-i := i + 2
-return: true
+def solve
+	
+	def hanoi: rings as int, source target auxiliary as byte []
+		
+		def move: source target as byte []
+			writeString: "Movin from "
+			writeString: source
+			writeString: " to "
+			writeString: target
+			writeString: ".\n"
+
+		if rings >= 1:
+			hanoi: rings-1,source,auxiliary,target
+			move: source, target
+			hanoi: rings-1,auxiliary, targer, source
+
+	var numberOfRings is int
+	
+	writeString "Rings: "				
+	numberOfRings := readInteger()
+	hanoi: numberOfRings, "left","right","middle"

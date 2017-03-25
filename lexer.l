@@ -1,11 +1,11 @@
 %{
 
-
-/*----------------------------------------To-do---------------------------------------------------------------------------------------------------------------------------
+/*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
 > instead of printf, we got to return something  (T_*) (??)
 > fix ints ( 007 -> 7)
 > push error codes to some struct?
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+> fix the layout shit with the tabs
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
@@ -15,13 +15,56 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
+/*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
+#define T_eof 0
+
+#define T_and 1000
+#define T_as 1001
+#define T_begin 1002
+#define T_break 1003
+#define T_byte 1004
+#define T_continue 1005
+#define T_decl 1006
+#define T_def 1007
+#define T_elif 1008
+#define T_else 1009
+#define T_end 1010
+#define T_exit 1011
+#define T_false 1012
+#define T_if 1013
+#define T_is 1014
+#define T_int 1015
+#define T_loop 1016
+#define T_not 1017
+#define T_or 1018
+#define T_ref 1019
+#define T_return 1020
+#define T_skip 1021
+#define T_true 1022
+#define T_var 1023
+
+#define T_id 1024
+#define T_const 1025
+#define T_string 1026
+#define T_greater_equal 1027
+#define T_less_equal 1028
+#define T_assign 1029
+#define T_char_const 1030
+#define T_not_equal 1031
+#define T_escape 1032
+#define T_hex 1033
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 void error_handler();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
 /*----------------------------------------Variables----------------------------------------------------------------------------------------------------------------------*/
-int number_of_lines = 0;
+int number_of_lines = 1;
 int number_of_errors = 0;
 int comment_depth = 0;
 int indentation_depth = 0;
@@ -30,83 +73,121 @@ char hex_num[3];
 
 %}
 
-L [A-Za-z]
-D [0-9]
-C [^'"\\\n]
+L [A-Za-z]	
+D [0-9]						
+C [^'"\\\n]				
 HEX [0-9|A-F|a-f] 	
-HEN \\x{HEX}{HEX}
-ESC \\(n|t|r|0|\\|\'|\")
-SC [^\n\"]  
+HEN \\x{HEX}{HEX}			
+ESC \\(n|t|r|0|\\|\'|\")	
+SC [^\n\"]  				
 QC \\(\")
-W [ ]
+W [ \t]						
 
 %%
 
-begin 															printf( "Begin statement, indentation depth increased to %d\n", ++indentation_depth );
+begin 															{ printf( "Begin statement(code %d), indentation depth increased to %d\n" , T_begin , ++indentation_depth ); 
+																  return T_begin; }
 
-end 															printf( "End statement, indentation depth decreased to %d\n", --indentation_depth );
+end 															{ printf( "End statement(code %d), indentation depth decreased to %d\n" , T_end , --indentation_depth );
+																  return T_end; }
 
-and                                                             printf( "And statement\n" );
+and                                                             { printf( "And statement(code %d)\n" , T_and );
+																  return T_and; }
 
-as                                                             	printf( "As statement\n" );
+as                                                             	{ printf( "As statement(code %d)\n" , T_as );
+																  return T_as; }
 
-break                                                           printf( "Break statement\n" );
+break                                                           { printf( "Break statement(code %d)\n" , T_break );
+																  return T_break; }
 
-def																printf( "Def statement\n" );
+def																{ printf( "Def statement(code %d)\n" , T_def );
+																  return T_def; }
 
-byte                                                            printf( "Byte statement\n" );
+byte                                                            { printf( "Byte statement(code %d)\n" , T_byte );
+																  return T_byte; }
 
-continue                                                        printf( "Continue statement\n" );
+continue                                                        { printf( "Continue statement(code %d)\n" ,T_continue );
+																  return T_continue; }
 
-decl                                                            printf( "Decl statement\n" );
+decl                                                            { printf( "Decl statement(code %d)\n" , T_decl );
+																  return T_decl; }
 
-elif                                                            printf( "Elif statement\n" );
+elif                                                            { printf( "Elif statement(code %d)\n" , T_elif );
+																  return T_elif; }
 
-else                                                            printf( "Else statement\n" );
+else                                                            { printf( "Else statement(code %d)\n" , T_else );
+																  return T_else; }
 
-exit                                                            printf( "Exit statement\n" );
+exit                                                            { printf( "Exit statement(code %d)\n" , T_exit );
+																  return T_exit; }
 
-false															printf( "False statement\n" );
+false															{ printf( "False statement(code %d)\n" , T_false );
+																  return T_false; }
 
-if                                                              printf( "If statement\n" );
+if                                                              { printf( "If statement(code %d)\n" , T_if );
+																  return T_if; }
 
-is                                                              printf( "Is statement\n" );
+is                                                              { printf( "Is statement(code %d)\n" , T_is );
+																  return T_is; }
 
-int                                                             printf( "Int statement\n" );
+int                                                             { printf( "Int statement(code %d)\n" , T_int );
+																  return T_int; }
 
-loop                                                            printf( "Loop statement\n" );
+loop                                                            { printf( "Loop statement(code %d)\n" , T_loop );
+																  return T_loop; }
 
-not                                                             printf( "Not statement\n" );
+not                                                             { printf( "Not statement(code %d)\n" , T_not );
+																  return T_not; }
 
-or                                                              printf( "Or statement\n" );
+or                                                              { printf( "Or statement(code %d)\n" , T_or );
+																  return T_or; }
 
-ref                                                             printf( "Ref statement\n" );
+ref                                                             { printf( "Ref statement(code %d)\n" , T_ref );
+																  return T_ref; }
 
-return                                                          printf( "Return statement\n" );
+return                                                          { printf( "Return statement(code %d)\n" , T_return );
+																  return T_return; }
 
-skip                                                            printf( "Skip statement\n" );
+skip                                                            { printf( "Skip statement(code %d)\n" , T_skip );
+																  return T_skip; }
 
-true                                                            printf( "True statement\n" );
+true                                                            { printf( "True statement(code %d)\n" , T_true );
+																  return T_true; }
 
-var                                                             printf( "Var statement\n" );
+var                                                             { printf( "Var statement(code %d)\n" , T_var );
+																  return T_var; }
 
-{D}+								 							printf( "integer = %d\n" , atoi(yytext) ); 
+{D}+								 							{ printf( "Integer(code %d) = %d\n" , T_const , atoi(yytext) ); 
+																  return T_const; }
 
-{L}({L}|{D}|"_")*												printf( "identifier = %s\n", yytext );
+{L}({L}|{D}|"_")*												{ printf( "Identifier(code %d) = %s\n" , T_id , yytext );
+																  return T_id; }
 
-\n																number_of_lines++;
+\n																{ number_of_lines++; }
 
-\'{HEN}\'														printf( "Hexademical Number = H%s\n", strncpy(hex_num, yytext + 3, 2) );
 
-\'{ESC}\'														printf( "Escape Character = %s\n" , yytext );
+\'{HEN}\'														{ printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
+																  return T_hex; }
 
-\'({C})\' 														printf( "Single Character = %s\n" , yytext );
 
-\"({QC}|{SC})*\"												printf( "String = %s\n",yytext );
+\'{ESC}\'														{ printf( "Escape Character(code %d) = %s\n" , T_escape , yytext );
+																  return T_escape; }
 
-"#"				                        						printf( "Start of one line comment\n" );
 
-"(*" 															{ printf( "Start of many lines comment\n" ); comment_depth++; }
+\'({C})\' 														{ printf( "Single Character(code %d) = %s\n" , T_char_const , yytext );
+																  return T_char_const; }
+
+
+\"({QC}|{SC})*\"												{ printf( "String(code %d) = %s\n", T_string , yytext );
+																  return T_string; }
+
+
+"#"				                        						{ printf( "Start of one line comment(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
+
+
+"(*" 															{ printf( "Start of many lines comment\n" );
+																  comment_depth++; }
 
 
 "*)"  				                    	            		{ printf( "End of many lines comment\n" ); 
@@ -114,52 +195,78 @@ var                                                             printf( "Var sta
 																if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 
 
-"+"																printf( "Plus Token\n" );
+"+"																{ printf( "Plus Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
 
-"-"																printf( "Minus Token\n" );
+"-"																{ printf( "Minus Token(ASCII code %d\n" , yytext[0] );
+																  return yytext[0]; }
 
-"*"																printf( "Multiply Token\n" );
+
+"*"																{ printf( "Multiply Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
+
 	
-"/" 		                            		                printf( "Division Token\n" );
+"/" 		                            		                { printf( "Division Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"%"                                                             printf( "Modulo Token\n" );
+"%"                                                             { printf( "Modulo Token(ASCII code %d\n" , yytext[0] );
+																  return yytext[0]; }
 
-"!"                                                             printf( "Logical Not Token\n" );
+"!"                                                             { printf( "Logical Not Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"&"                                                             printf( "Logical And Token\n" );
+"&"                                                             { printf( "Logical And Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"|"                                                             printf( "Logical Or Token\n" );
+"|"                                                             { printf( "Logical Or Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"="                                                             printf( "Equal Token\n" );
+"="                                                             { printf( "Equal Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"<>"                                                            printf( "Not Equal Token\n" );
+"<>"                                                            { printf( "Not Equal Token(code %d)\n" , T_not_equal );
+																  return T_not_equal; }	
 
-"<"                                                             printf( "Less Than Token\n" );
+"<"                                                             { printf( "Less Than Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-">"                                                             printf( "Greater Than Token\n" );
+">"                                                             { printf( "Greater Than Token(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"<="                                                            printf( "Less or Equal Token\n" );
+"<="                                                            { printf( "Less or Equal Token(code %d)\n" , T_less_equal );
+																  return T_less_equal; }
 
-">="                                                            printf( "Greater or Equal Token\n" );
+">="                                                            { printf( "Greater or Equal Token(code %d)\n" , T_greater_equal );
+																  return T_greater_equal; }
 
-"("																printf( "Left Parenthesis\n" );
+"("																{ printf( "Left Parenthesis(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-")"																printf( "Right Parenthesis\n" );
+")"																{ printf( "Right Parenthesis(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-"["																printf( "Left Bracket\n" );
+"["																{ printf( "Left Bracket(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 	
-"]"																printf( "Right Bracket\n" );
+"]"																{ printf( "Right Bracket(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-","																printf( "Comma\n" );
+","																{ printf( "Comma(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-":"																printf( "Colon\n" );
+":"																{ printf( "Colon(ASCII code %d)\n" , yytext[0] );
+																  return yytext[0]; }
 
-":="															printf( "Assignment\n" );
+":="															{ printf( "Assignment(code %d)\n" , T_assign );
+																  return T_assign; }
 
 {W}																/* do nothing! */ 
 
-.																{ number_of_errors++; error_handler( yytext , number_of_lines ); }
+
+.																{ number_of_errors++; 
+																  error_handler( yytext , number_of_lines ); }
+
 
 %%
 
@@ -169,9 +276,13 @@ void error_handler(char *error , int n) {
 
 
 int main() {
-	yylex();
+
+	int token;
+	do{
+		token = yylex();
+	} while (token != T_eof);
+
 	printf( "Total Lines		     : %d\n" , number_of_lines );
 	printf( "Total Number of Errors found : %d\n" , number_of_errors );
 	return 0;
 }
-
