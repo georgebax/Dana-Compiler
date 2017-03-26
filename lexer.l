@@ -59,6 +59,7 @@
 
 
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
+int count_tabs(char *txt);
 void error_handler();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -69,6 +70,8 @@ int number_of_errors = 0;
 int comment_depth = 0;
 int indentation_depth = 0;
 char hex_num[3];
+int tabs = 0;
+
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %}
@@ -81,7 +84,8 @@ HEN \\x{HEX}{HEX}
 ESC \\(n|t|r|0|\\|\'|\")	
 SC [^\n\"]  				
 QC \\(\")
-W [ \t]						
+W [ ]						
+T [\t]
 
 %%
 
@@ -163,7 +167,13 @@ var                                                             { printf( "Var s
 {L}({L}|{D}|"_")*												{ printf( "Identifier(code %d) = %s\n" , T_id , yytext );
 																  return T_id; }
 
-\n																{ number_of_lines++; }
+\n{T}+															{  number_of_lines++;
+															 	   printf( "LINE:%d\n" , number_of_lines);
+																   tabs = count_tabs(yytext); 
+																   printf( "Line %d starts with %d tabs\n" , number_of_lines , tabs); }
+
+\n 																{ number_of_lines++; printf( "LINE:%d\n" , number_of_lines);}
+
 
 
 \'{HEN}\'														{ printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
@@ -261,7 +271,7 @@ var                                                             { printf( "Var s
 ":="															{ printf( "Assignment(code %d)\n" , T_assign );
 																  return T_assign; }
 
-{W}																/* do nothing! */ 
+{W}|{T}															/* do nothing! */ 
 
 
 .																{ number_of_errors++; 
@@ -274,6 +284,21 @@ void error_handler(char *error , int n) {
         printf( "Error in line %d : %s\n" , n , error );
 }
 
+int count_tabs(char *txt)
+{
+	int i;
+	int num_of_tabs = 0;
+	for( i = 0; i <= strlen(txt); i++ )
+	{
+		printf( "%d\t" , txt[ i ] );
+		if ( txt[ i ] == '\t' )
+			num_of_tabs++;
+		i++;
+	}
+	printf( "\n");
+	return num_of_tabs;
+}
+
 
 int main() {
 
@@ -282,7 +307,7 @@ int main() {
 		token = yylex();
 	} while (token != T_eof);
 
-	printf( "Total Lines		     : %d\n" , number_of_lines );
+	printf( "Total Lines		     : %d\n" , number_of_lines - 1 );
 	printf( "Total Number of Errors found : %d\n" , number_of_errors );
 	return 0;
 }
