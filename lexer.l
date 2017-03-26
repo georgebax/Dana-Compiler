@@ -290,12 +290,10 @@ int count_tabs(char *txt)
 	int num_of_tabs = 0;
 	for( i = 0; i <= strlen(txt); i++ )
 	{
-		printf( "%d\t" , txt[ i ] );
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
 		i++;
 	}
-	printf( "\n");
 	return num_of_tabs;
 }
 
