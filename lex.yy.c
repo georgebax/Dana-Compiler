@@ -1066,203 +1066,204 @@ case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
 #line 170 "lexer.l"
-{  number_of_lines++;
-															 	   printf( "LINE:%d\n" , number_of_lines);
-																   tabs = count_tabs(yytext); 
-																   printf( "Line %d starts with %d tabs\n" , number_of_lines , tabs); }
+{ number_of_lines++;
+																  printf( "LINE:%d\n" , number_of_lines);
+														          tabs = count_tabs(yytext); 
+																  printf( "Line %d starts with %d tabs\n" , number_of_lines-1 /*point to current line!*/ , tabs); 
+                                                                  printf( "Indentation depth set to %d\n", ++indentation_depth ); }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 175 "lexer.l"
+#line 176 "lexer.l"
 { number_of_lines++; printf( "LINE:%d\n" , number_of_lines);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 179 "lexer.l"
+#line 180 "lexer.l"
 { printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
 																  return T_hex; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 183 "lexer.l"
+#line 184 "lexer.l"
 { printf( "Escape Character(code %d) = %s\n" , T_escape , yytext );
 																  return T_escape; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 187 "lexer.l"
+#line 188 "lexer.l"
 { printf( "Single Character(code %d) = %s\n" , T_char_const , yytext );
 																  return T_char_const; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 191 "lexer.l"
+#line 192 "lexer.l"
 { printf( "String(code %d) = %s\n", T_string , yytext );
 																  return T_string; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 195 "lexer.l"
+#line 196 "lexer.l"
 { printf( "Start of one line comment(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 199 "lexer.l"
+#line 200 "lexer.l"
 { printf( "Start of many lines comment\n" );
 																  comment_depth++; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 203 "lexer.l"
+#line 204 "lexer.l"
 { printf( "End of many lines comment\n" ); 
-																comment_depth--; 
-																if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
+																  comment_depth--; 
+																  if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 208 "lexer.l"
+#line 209 "lexer.l"
 { printf( "Plus Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 212 "lexer.l"
+#line 213 "lexer.l"
 { printf( "Minus Token(ASCII code %d\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 216 "lexer.l"
+#line 217 "lexer.l"
 { printf( "Multiply Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 220 "lexer.l"
+#line 221 "lexer.l"
 { printf( "Division Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 223 "lexer.l"
+#line 224 "lexer.l"
 { printf( "Modulo Token(ASCII code %d\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 226 "lexer.l"
+#line 227 "lexer.l"
 { printf( "Logical Not Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 229 "lexer.l"
+#line 230 "lexer.l"
 { printf( "Logical And Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 232 "lexer.l"
+#line 233 "lexer.l"
 { printf( "Logical Or Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 235 "lexer.l"
+#line 236 "lexer.l"
 { printf( "Equal Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 238 "lexer.l"
+#line 239 "lexer.l"
 { printf( "Not Equal Token(code %d)\n" , T_not_equal );
 																  return T_not_equal; }	
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 241 "lexer.l"
+#line 242 "lexer.l"
 { printf( "Less Than Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 244 "lexer.l"
+#line 245 "lexer.l"
 { printf( "Greater Than Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 247 "lexer.l"
+#line 248 "lexer.l"
 { printf( "Less or Equal Token(code %d)\n" , T_less_equal );
 																  return T_less_equal; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 250 "lexer.l"
+#line 251 "lexer.l"
 { printf( "Greater or Equal Token(code %d)\n" , T_greater_equal );
 																  return T_greater_equal; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 253 "lexer.l"
+#line 254 "lexer.l"
 { printf( "Left Parenthesis(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 256 "lexer.l"
+#line 257 "lexer.l"
 { printf( "Right Parenthesis(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 259 "lexer.l"
+#line 260 "lexer.l"
 { printf( "Left Bracket(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 262 "lexer.l"
+#line 263 "lexer.l"
 { printf( "Right Bracket(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 265 "lexer.l"
+#line 266 "lexer.l"
 { printf( "Comma(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 268 "lexer.l"
+#line 269 "lexer.l"
 { printf( "Colon(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 271 "lexer.l"
+#line 272 "lexer.l"
 { printf( "Assignment(code %d)\n" , T_assign );
 																  return T_assign; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 274 "lexer.l"
+#line 275 "lexer.l"
 /* do nothing! */ 
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 277 "lexer.l"
+#line 278 "lexer.l"
 { number_of_errors++; 
 																  error_handler( yytext , number_of_lines ); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 281 "lexer.l"
+#line 282 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1266 "lex.yy.c"
+#line 1267 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2263,7 +2264,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 281 "lexer.l"
+#line 282 "lexer.l"
 
 
 
@@ -2276,11 +2277,8 @@ int count_tabs(char *txt)
 	int i;
 	int num_of_tabs = 0;
 	for( i = 0; i <= strlen(txt); i++ )
-	{
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
-		i++;
-	}
 	return num_of_tabs;
 }
 
@@ -2296,3 +2294,4 @@ int main() {
 	printf( "Total Number of Errors found : %d\n" , number_of_errors );
 	return 0;
 }
+

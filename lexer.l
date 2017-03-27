@@ -167,10 +167,11 @@ var                                                             { printf( "Var s
 {L}({L}|{D}|"_")*												{ printf( "Identifier(code %d) = %s\n" , T_id , yytext );
 																  return T_id; }
 
-\n{T}+															{  number_of_lines++;
-															 	   printf( "LINE:%d\n" , number_of_lines);
-																   tabs = count_tabs(yytext); 
-																   printf( "Line %d starts with %d tabs\n" , number_of_lines , tabs); }
+\n{T}+															{ number_of_lines++;
+																  printf( "LINE:%d\n" , number_of_lines);
+														          tabs = count_tabs(yytext); 
+																  printf( "Line %d starts with %d tabs\n" , number_of_lines-1 /*point to current line!*/ , tabs); 
+                                                                  printf( "Indentation depth set to %d\n", ++indentation_depth ); }
 
 \n 																{ number_of_lines++; printf( "LINE:%d\n" , number_of_lines);}
 
@@ -201,8 +202,8 @@ var                                                             { printf( "Var s
 
 
 "*)"  				                    	            		{ printf( "End of many lines comment\n" ); 
-																comment_depth--; 
-																if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
+																  comment_depth--; 
+																  if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 
 
 "+"																{ printf( "Plus Token(ASCII code %d)\n" , yytext[0] );
@@ -289,11 +290,8 @@ int count_tabs(char *txt)
 	int i;
 	int num_of_tabs = 0;
 	for( i = 0; i <= strlen(txt); i++ )
-	{
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
-		i++;
-	}
 	return num_of_tabs;
 }
 
