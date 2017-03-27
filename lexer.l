@@ -170,11 +170,10 @@ var                                                             { printf( "Var s
 \n{T}+															{ number_of_lines++;
 																  printf( "LINE:%d\n" , number_of_lines);
 														          tabs = count_tabs(yytext); 
-																  printf( "Line %d starts with %d tabs\n" , number_of_lines-1 /*point to current line!*/ , tabs); 
+																  printf( "Line %d starts with %d tabs\n" , number_of_lines /*point to current line!*/ , tabs); 
                                                                   printf( "Indentation depth set to %d\n", ++indentation_depth ); }
 
 \n 																{ number_of_lines++; printf( "LINE:%d\n" , number_of_lines);}
-
 
 
 \'{HEN}\'														{ printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
@@ -298,6 +297,7 @@ int count_tabs(char *txt)
 
 int main() {
 
+	printf( "LINE:1\n" );
 	int token;
 	do{
 		token = yylex();

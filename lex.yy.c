@@ -1069,7 +1069,7 @@ YY_RULE_SETUP
 { number_of_lines++;
 																  printf( "LINE:%d\n" , number_of_lines);
 														          tabs = count_tabs(yytext); 
-																  printf( "Line %d starts with %d tabs\n" , number_of_lines-1 /*point to current line!*/ , tabs); 
+																  printf( "Line %d starts with %d tabs\n" , number_of_lines /*point to current line!*/ , tabs); 
                                                                   printf( "Indentation depth set to %d\n", ++indentation_depth ); }
 	YY_BREAK
 case 28:
@@ -1080,187 +1080,187 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 180 "lexer.l"
+#line 179 "lexer.l"
 { printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
 																  return T_hex; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 184 "lexer.l"
+#line 183 "lexer.l"
 { printf( "Escape Character(code %d) = %s\n" , T_escape , yytext );
 																  return T_escape; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 188 "lexer.l"
+#line 187 "lexer.l"
 { printf( "Single Character(code %d) = %s\n" , T_char_const , yytext );
 																  return T_char_const; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 192 "lexer.l"
+#line 191 "lexer.l"
 { printf( "String(code %d) = %s\n", T_string , yytext );
 																  return T_string; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 196 "lexer.l"
+#line 195 "lexer.l"
 { printf( "Start of one line comment(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 200 "lexer.l"
+#line 199 "lexer.l"
 { printf( "Start of many lines comment\n" );
 																  comment_depth++; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 204 "lexer.l"
+#line 203 "lexer.l"
 { printf( "End of many lines comment\n" ); 
 																  comment_depth--; 
 																  if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 209 "lexer.l"
+#line 208 "lexer.l"
 { printf( "Plus Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 213 "lexer.l"
+#line 212 "lexer.l"
 { printf( "Minus Token(ASCII code %d\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 217 "lexer.l"
+#line 216 "lexer.l"
 { printf( "Multiply Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 221 "lexer.l"
+#line 220 "lexer.l"
 { printf( "Division Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 224 "lexer.l"
+#line 223 "lexer.l"
 { printf( "Modulo Token(ASCII code %d\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 227 "lexer.l"
+#line 226 "lexer.l"
 { printf( "Logical Not Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 230 "lexer.l"
+#line 229 "lexer.l"
 { printf( "Logical And Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 233 "lexer.l"
+#line 232 "lexer.l"
 { printf( "Logical Or Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 236 "lexer.l"
+#line 235 "lexer.l"
 { printf( "Equal Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 239 "lexer.l"
+#line 238 "lexer.l"
 { printf( "Not Equal Token(code %d)\n" , T_not_equal );
 																  return T_not_equal; }	
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 242 "lexer.l"
+#line 241 "lexer.l"
 { printf( "Less Than Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 245 "lexer.l"
+#line 244 "lexer.l"
 { printf( "Greater Than Token(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 248 "lexer.l"
+#line 247 "lexer.l"
 { printf( "Less or Equal Token(code %d)\n" , T_less_equal );
 																  return T_less_equal; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 251 "lexer.l"
+#line 250 "lexer.l"
 { printf( "Greater or Equal Token(code %d)\n" , T_greater_equal );
 																  return T_greater_equal; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 254 "lexer.l"
+#line 253 "lexer.l"
 { printf( "Left Parenthesis(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 257 "lexer.l"
+#line 256 "lexer.l"
 { printf( "Right Parenthesis(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 260 "lexer.l"
+#line 259 "lexer.l"
 { printf( "Left Bracket(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 263 "lexer.l"
+#line 262 "lexer.l"
 { printf( "Right Bracket(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 266 "lexer.l"
+#line 265 "lexer.l"
 { printf( "Comma(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 269 "lexer.l"
+#line 268 "lexer.l"
 { printf( "Colon(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 272 "lexer.l"
+#line 271 "lexer.l"
 { printf( "Assignment(code %d)\n" , T_assign );
 																  return T_assign; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 275 "lexer.l"
+#line 274 "lexer.l"
 /* do nothing! */ 
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 278 "lexer.l"
+#line 277 "lexer.l"
 { number_of_errors++; 
 																  error_handler( yytext , number_of_lines ); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 282 "lexer.l"
+#line 281 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 1267 "lex.yy.c"
@@ -2264,7 +2264,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 282 "lexer.l"
+#line 281 "lexer.l"
 
 
 
@@ -2285,6 +2285,7 @@ int count_tabs(char *txt)
 
 int main() {
 
+	printf( "LINE:1\n" );
 	int token;
 	do{
 		token = yylex();
