@@ -1,10 +1,8 @@
 %{
 
 /*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
-> instead of printf, we got to return something  (T_*) (??)
-> fix ints ( 007 -> 7)
 > push error codes to some struct?
-> fix the layout shit with the tabs
+> prepei na doume pisteuw an exei kai sti prwti grammi tab stin arhi.nomizw epireazei
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -168,12 +166,12 @@ var                                                             { printf( "Var s
 																  return T_id; }
 
 \n{T}+															{ number_of_lines++;
-																  printf( "LINE:%d\n" , number_of_lines);
+																  printf( "\nLINE:%d\n" , number_of_lines);
 														          tabs = count_tabs(yytext); 
 																  printf( "Line %d starts with %d tabs\n" , number_of_lines /*point to current line!*/ , tabs); 
                                                                   printf( "Indentation depth set to %d\n", ++indentation_depth ); }
 
-\n 																{ number_of_lines++; printf( "LINE:%d\n" , number_of_lines);}
+\n 																{ number_of_lines++; printf( "\nLINE:%d\n" , number_of_lines);}
 
 
 \'{HEN}\'														{ printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
@@ -281,7 +279,7 @@ var                                                             { printf( "Var s
 %%
 
 void error_handler(char *error , int n) {
-        printf( "Error in line %d : %s\n" , n , error );
+        printf( "ERROR FOUND IN LINE %d : %s\n" , n , error );
 }
 
 int count_tabs(char *txt)
@@ -302,6 +300,15 @@ int main() {
 	do{
 		token = yylex();
 	} while (token != T_eof);
+
+	if( number_of_errors == 0 )
+	{
+		printf("\nLEXICAL COMPILATION TERMINATED SUCCESSFULLY!!!!!\n" );
+	}
+	else
+	{
+		printf( "\nCOMPILATION UNSUCCESSFULL\n" );
+	}
 
 	printf( "Total Lines		     : %d\n" , number_of_lines - 1 );
 	printf( "Total Number of Errors found : %d\n" , number_of_errors );

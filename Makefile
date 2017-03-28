@@ -2,7 +2,7 @@ lexer: lex.yy.c
 	gcc $< -lfl -o lexer
 
 lex.yy.c: lexer.l
-	flex -s -o lexer.c lexer.l
+	flex $<
 
 clean:
 	$(RM) *.o lex.yy.c

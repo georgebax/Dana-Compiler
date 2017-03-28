@@ -15,7 +15,7 @@ def solve
 				hanoi: rings-1,auxiliary, targer, source
 
 	var numberOfRings is int
-		
+
 	writeString "Rings: "				
 	numberOfRings := readInteger()
 	hanoi: numberOfRings, "left","right","middle"
