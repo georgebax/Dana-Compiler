@@ -57,7 +57,7 @@
 
 
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
-int count_tabs(char *txt);
+int count_tabs(char *txt );
 void error_handler();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -69,6 +69,7 @@ int comment_depth = 0;
 int indentation_depth = 0;
 char hex_num[3];
 int tabs = 0;
+int tab_start = 0;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -167,9 +168,14 @@ var                                                             { printf( "Var s
 
 \n{T}+															{ number_of_lines++;
 																  printf( "\nLINE:%d\n" , number_of_lines);
-														          tabs = count_tabs(yytext); 
+																  printf("Tab start %d\n" , tab_start);
+														          tabs = count_tabs( yytext ); 
 																  printf( "Line %d starts with %d tabs\n" , number_of_lines /*point to current line!*/ , tabs); 
-                                                                  printf( "Indentation depth set to %d\n", ++indentation_depth ); }
+																  tabs = tabs-tab_start;
+                                                                  printf( "Indentation depth set to %d\n", tabs ); }
+
+
+{T}+															{ if( number_of_lines == 1 ) { printf("here\n"); tab_start = count_tabs( yytext ); } }                                                                  
 
 \n 																{ number_of_lines++; printf( "\nLINE:%d\n" , number_of_lines);}
 
@@ -282,7 +288,7 @@ void error_handler(char *error , int n) {
         printf( "ERROR FOUND IN LINE %d : %s\n" , n , error );
 }
 
-int count_tabs(char *txt)
+int count_tabs( char *txt )
 {
 	int i;
 	int num_of_tabs = 0;
