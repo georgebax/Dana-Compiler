@@ -555,8 +555,7 @@ char *yytext;
 #line 2 "lexer.l"
 
 /*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
-> push error codes to some struct?
-> prepei na doume pisteuw an exei kai sti prwti grammi tab stin arhi.nomizw epireazei
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -565,50 +564,6 @@ char *yytext;
 #include <stdlib.h>
 #include <string.h>
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
-/*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
-#define T_eof 0
-
-#define T_and 1000
-#define T_as 1001
-#define T_begin 1002
-#define T_break 1003
-#define T_byte 1004
-#define T_continue 1005
-#define T_decl 1006
-#define T_def 1007
-#define T_elif 1008
-#define T_else 1009
-#define T_end 1010
-#define T_exit 1011
-#define T_false 1012
-#define T_if 1013
-#define T_is 1014
-#define T_int 1015
-#define T_loop 1016
-#define T_not 1017
-#define T_or 1018
-#define T_ref 1019
-#define T_return 1020
-#define T_skip 1021
-#define T_true 1022
-#define T_var 1023
-
-#define T_id 1024
-#define T_const 1025
-#define T_string 1026
-#define T_greater_equal 1027
-#define T_less_equal 1028
-#define T_assign 1029
-#define T_char_const 1030
-#define T_not_equal 1031
-#define T_escape 1032
-#define T_hex 1033
-
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
 
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 int count_tabs(char *txt );
@@ -624,10 +579,11 @@ int indentation_depth = 0;
 char hex_num[3];
 int tabs = 0;
 int tab_start = 0;
+int flag = 1;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-#line 631 "lex.yy.c"
+#line 587 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -845,10 +801,10 @@ YY_DECL
 		}
 
 	{
-#line 89 "lexer.l"
+#line 45 "lexer.l"
 
 
-#line 852 "lex.yy.c"
+#line 808 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -907,369 +863,317 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 91 "lexer.l"
-{ printf( "Begin statement(code %d), indentation depth increased to %d\n" , T_begin , ++indentation_depth ); 
-																  return T_begin; }
+#line 47 "lexer.l"
+{ flag = 0; return T_begin; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 94 "lexer.l"
-{ printf( "End statement(code %d), indentation depth decreased to %d\n" , T_end , --indentation_depth );
-																  return T_end; }
+#line 49 "lexer.l"
+{ flag = 0; return T_end; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 97 "lexer.l"
-{ printf( "And statement(code %d)\n" , T_and );
-																  return T_and; }
+#line 51 "lexer.l"
+{ flag = 0; return T_and; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 100 "lexer.l"
-{ printf( "As statement(code %d)\n" , T_as );
-																  return T_as; }
+#line 53 "lexer.l"
+{ flag = 0; return T_as; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 103 "lexer.l"
-{ printf( "Break statement(code %d)\n" , T_break );
-																  return T_break; }
+#line 55 "lexer.l"
+{ flag = 0; return T_break; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 106 "lexer.l"
-{ printf( "Def statement(code %d)\n" , T_def );
-																  return T_def; }
+#line 57 "lexer.l"
+{ flag = 0; return T_def; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 109 "lexer.l"
-{ printf( "Byte statement(code %d)\n" , T_byte );
-																  return T_byte; }
+#line 59 "lexer.l"
+{ flag = 0; return T_byte; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 112 "lexer.l"
-{ printf( "Continue statement(code %d)\n" ,T_continue );
-																  return T_continue; }
+#line 61 "lexer.l"
+{ flag = 0; return T_continue; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 115 "lexer.l"
-{ printf( "Decl statement(code %d)\n" , T_decl );
-																  return T_decl; }
+#line 63 "lexer.l"
+{ flag = 0; return T_decl; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 118 "lexer.l"
-{ printf( "Elif statement(code %d)\n" , T_elif );
-																  return T_elif; }
+#line 65 "lexer.l"
+{ flag = 0; return T_elif; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 121 "lexer.l"
-{ printf( "Else statement(code %d)\n" , T_else );
-																  return T_else; }
+#line 67 "lexer.l"
+{ flag = 0; return T_else; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 124 "lexer.l"
-{ printf( "Exit statement(code %d)\n" , T_exit );
-																  return T_exit; }
+#line 69 "lexer.l"
+{ flag = 0; return T_exit; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 127 "lexer.l"
-{ printf( "False statement(code %d)\n" , T_false );
-																  return T_false; }
+#line 71 "lexer.l"
+{ flag = 0; return T_false; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 130 "lexer.l"
-{ printf( "If statement(code %d)\n" , T_if );
-																  return T_if; }
+#line 73 "lexer.l"
+{ flag = 0; return T_if; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 133 "lexer.l"
-{ printf( "Is statement(code %d)\n" , T_is );
-																  return T_is; }
+#line 75 "lexer.l"
+{ flag = 0; return T_is; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 136 "lexer.l"
-{ printf( "Int statement(code %d)\n" , T_int );
-																  return T_int; }
+#line 77 "lexer.l"
+{ flag = 0; return T_int; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 139 "lexer.l"
-{ printf( "Loop statement(code %d)\n" , T_loop );
-																  return T_loop; }
+#line 79 "lexer.l"
+{ flag = 0; return T_loop; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 142 "lexer.l"
-{ printf( "Not statement(code %d)\n" , T_not );
-																  return T_not; }
+#line 81 "lexer.l"
+{ flag = 0; return T_not; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 145 "lexer.l"
-{ printf( "Or statement(code %d)\n" , T_or );
-																  return T_or; }
+#line 83 "lexer.l"
+{ flag = 0; return T_or; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 148 "lexer.l"
-{ printf( "Ref statement(code %d)\n" , T_ref );
-																  return T_ref; }
+#line 85 "lexer.l"
+{ flag = 0; return T_ref; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 151 "lexer.l"
-{ printf( "Return statement(code %d)\n" , T_return );
-																  return T_return; }
+#line 87 "lexer.l"
+{ flag = 0; return T_return; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 154 "lexer.l"
-{ printf( "Skip statement(code %d)\n" , T_skip );
-																  return T_skip; }
+#line 89 "lexer.l"
+{ flag = 0; return T_skip; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 157 "lexer.l"
-{ printf( "True statement(code %d)\n" , T_true );
-																  return T_true; }
+#line 91 "lexer.l"
+{ flag = 0; return T_true; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 160 "lexer.l"
-{ printf( "Var statement(code %d)\n" , T_var );
-																  return T_var; }
+#line 93 "lexer.l"
+{ flag = 0; return T_var; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 163 "lexer.l"
-{ printf( "Integer(code %d) = %d\n" , T_const , atoi(yytext) ); 
-																  return T_const; }
+#line 95 "lexer.l"
+{ flag = 0; return T_const; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 166 "lexer.l"
-{ printf( "Identifier(code %d) = %s\n" , T_id , yytext );
-																  return T_id; }
+#line 97 "lexer.l"
+{ flag = 0; return T_id; }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 169 "lexer.l"
+#line 99 "lexer.l"
 { number_of_lines++;
 																  printf( "\nLINE:%d\n" , number_of_lines);
-																  printf("Tab start %d\n" , tab_start);
 														          tabs = count_tabs( yytext ); 
-																  printf( "Line %d starts with %d tabs\n" , number_of_lines /*point to current line!*/ , tabs); 
+																  printf( "Line %d starts with %d tabs so " , number_of_lines /*point to current line!*/ , tabs); 
 																  tabs = tabs-tab_start;
-                                                                  printf( "Indentation depth set to %d\n", tabs ); }
+                                                                  printf( "indentation depth set to %d\n", tabs ); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 178 "lexer.l"
-{ if( number_of_lines == 1 ) { printf("here\n"); tab_start = count_tabs( yytext ); } }                                                                  
+#line 107 "lexer.l"
+{ if( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); printf("The first line starts with %d tabs!!\n" , tab_start); } }                                                                  
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 180 "lexer.l"
+#line 109 "lexer.l"
 { number_of_lines++; printf( "\nLINE:%d\n" , number_of_lines);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 183 "lexer.l"
-{ printf( "Hexademical Number(code %d) = H%s\n" , T_hex , strncpy(hex_num, yytext + 3, 2) );
-																  return T_hex; }
+#line 112 "lexer.l"
+{ flag = 0; return T_hex; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 187 "lexer.l"
-{ printf( "Escape Character(code %d) = %s\n" , T_escape , yytext );
-																  return T_escape; }
+#line 115 "lexer.l"
+{ flag = 0; return T_escape; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 191 "lexer.l"
-{ printf( "Single Character(code %d) = %s\n" , T_char_const , yytext );
-																  return T_char_const; }
+#line 118 "lexer.l"
+{ flag = 0; return T_char_const; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 195 "lexer.l"
-{ printf( "String(code %d) = %s\n", T_string , yytext );
-																  return T_string; }
+#line 121 "lexer.l"
+{ flag = 0; return T_string; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 199 "lexer.l"
+#line 124 "lexer.l"
 { printf( "Start of one line comment(ASCII code %d)\n" , yytext[0] );
 																  return yytext[0]; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 203 "lexer.l"
+#line 128 "lexer.l"
 { printf( "Start of many lines comment\n" );
 																  comment_depth++; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 207 "lexer.l"
+#line 132 "lexer.l"
 { printf( "End of many lines comment\n" ); 
 																  comment_depth--; 
 																  if ( comment_depth == 0 ) puts( "Comments Closed!" ); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 212 "lexer.l"
-{ printf( "Plus Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 137 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 216 "lexer.l"
-{ printf( "Minus Token(ASCII code %d\n" , yytext[0] );
-																  return yytext[0]; }
+#line 140 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 220 "lexer.l"
-{ printf( "Multiply Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 143 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 224 "lexer.l"
-{ printf( "Division Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 146 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 227 "lexer.l"
-{ printf( "Modulo Token(ASCII code %d\n" , yytext[0] );
-																  return yytext[0]; }
+#line 148 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 230 "lexer.l"
-{ printf( "Logical Not Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 150 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 233 "lexer.l"
-{ printf( "Logical And Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 152 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 236 "lexer.l"
-{ printf( "Logical Or Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 154 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 239 "lexer.l"
-{ printf( "Equal Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 156 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 242 "lexer.l"
-{ printf( "Not Equal Token(code %d)\n" , T_not_equal );
-																  return T_not_equal; }	
+#line 158 "lexer.l"
+{ flag = 0; return T_not_equal; }	
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 245 "lexer.l"
-{ printf( "Less Than Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 160 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 248 "lexer.l"
-{ printf( "Greater Than Token(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 162 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 251 "lexer.l"
-{ printf( "Less or Equal Token(code %d)\n" , T_less_equal );
-																  return T_less_equal; }
+#line 164 "lexer.l"
+{ flag = 0; return T_less_equal; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 254 "lexer.l"
-{ printf( "Greater or Equal Token(code %d)\n" , T_greater_equal );
-																  return T_greater_equal; }
+#line 166 "lexer.l"
+{ flag = 0; return T_greater_equal; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 257 "lexer.l"
-{ printf( "Left Parenthesis(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 168 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 260 "lexer.l"
-{ printf( "Right Parenthesis(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 170 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 263 "lexer.l"
-{ printf( "Left Bracket(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 172 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 266 "lexer.l"
-{ printf( "Right Bracket(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 174 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 269 "lexer.l"
-{ printf( "Comma(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 176 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 272 "lexer.l"
-{ printf( "Colon(ASCII code %d)\n" , yytext[0] );
-																  return yytext[0]; }
+#line 178 "lexer.l"
+{ flag = 0; return yytext[0]; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 275 "lexer.l"
-{ printf( "Assignment(code %d)\n" , T_assign );
-																  return T_assign; }
+#line 180 "lexer.l"
+{ flag = 0; return T_assign; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 278 "lexer.l"
+#line 182 "lexer.l"
 /* do nothing! */ 
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 281 "lexer.l"
-{ number_of_errors++; 
+#line 185 "lexer.l"
+{ flag = 0; number_of_errors++; 
 																  error_handler( yytext , number_of_lines ); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 285 "lexer.l"
+#line 189 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1273 "lex.yy.c"
+#line 1177 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2270,7 +2174,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 285 "lexer.l"
+#line 189 "lexer.l"
 
 
 

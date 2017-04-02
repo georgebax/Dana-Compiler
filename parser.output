@@ -1,0 +1,180 @@
+Terminals unused in grammar
+
+   "as"
+   "begin"
+   "break"
+   "byte"
+   "continue"
+   "decl"
+   "elif"
+   "else"
+   "end"
+   "exit"
+   "false"
+   "is"
+   "int"
+   "loop"
+   "not"
+   "or"
+   "ref"
+   "return"
+   "skip"
+   "true"
+   "var"
+   T_greater_equal
+   T_less_equal
+   T_assign
+   T_char_const
+   T_not_equal
+   T_escape
+   T_hex
+   '+'
+   '-'
+   '*'
+   '/'
+   '%'
+   UMINUS
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: "and" T_id
+    2        | "if" T_const
+    3        | T_string
+    4        | "def" program
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'%' (37)
+'*' (42)
+'+' (43)
+'-' (45)
+'/' (47)
+error (256)
+"and" (258) 1
+"as" (259)
+"begin" (260)
+"break" (261)
+"byte" (262)
+"continue" (263)
+"decl" (264)
+"def" (265) 4
+"elif" (266)
+"else" (267)
+"end" (268)
+"exit" (269)
+"false" (270)
+"if" (271) 2
+"is" (272)
+"int" (273)
+"loop" (274)
+"not" (275)
+"or" (276)
+"ref" (277)
+"return" (278)
+"skip" (279)
+"true" (280)
+"var" (281)
+T_string (282) 3
+T_id (283) 1
+T_const (284) 2
+T_greater_equal (285)
+T_less_equal (286)
+T_assign (287)
+T_char_const (288)
+T_not_equal (289)
+T_escape (290)
+T_hex (291)
+UMINUS (292)
+
+
+Nonterminals, with rules where they appear
+
+$accept (43)
+    on left: 0
+program (44)
+    on left: 1 2 3 4, on right: 0 4
+
+
+State 0
+
+    0 $accept: . program $end
+
+    "and"     shift, and go to state 1
+    "def"     shift, and go to state 2
+    "if"      shift, and go to state 3
+    T_string  shift, and go to state 4
+
+    program  go to state 5
+
+
+State 1
+
+    1 program: "and" . T_id
+
+    T_id  shift, and go to state 6
+
+
+State 2
+
+    4 program: "def" . program
+
+    "and"     shift, and go to state 1
+    "def"     shift, and go to state 2
+    "if"      shift, and go to state 3
+    T_string  shift, and go to state 4
+
+    program  go to state 7
+
+
+State 3
+
+    2 program: "if" . T_const
+
+    T_const  shift, and go to state 8
+
+
+State 4
+
+    3 program: T_string .
+
+    $default  reduce using rule 3 (program)
+
+
+State 5
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 9
+
+
+State 6
+
+    1 program: "and" T_id .
+
+    $default  reduce using rule 1 (program)
+
+
+State 7
+
+    4 program: "def" program .
+
+    $default  reduce using rule 4 (program)
+
+
+State 8
+
+    2 program: "if" T_const .
+
+    $default  reduce using rule 2 (program)
+
+
+State 9
+
+    0 $accept: program $end .
+
+    $default  accept
