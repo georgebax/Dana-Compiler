@@ -2186,5 +2186,3 @@ int count_tabs( char *txt )
 			num_of_tabs++;
 	return num_of_tabs;
 }
-
-

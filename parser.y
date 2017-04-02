@@ -67,7 +67,85 @@ program:
 ;
 
 func_def:
-	"def
+	"def" header local_def_req block
+;
+
+local_def_req:
+	(local_def)* 
+;
+
+header:
+	id ("is" data_type) (":" fpar_def ("," fpar_def)*)
+;
+
+fpar_def:
+	(id)+ "as" fpar_type
+;
+
+data_type:
+	"int" | "byte"
+;
+
+type:
+	data_type ("[" int_const "]")
+;
+
+fpar_type:
+	type | "ref" data_type | data_type "[" "]" ("[" int_const "]")*
+;
+
+local_def:
+	func_def | func_decl | var_def
+;
+
+stmt:
+	"skip" | 
+	l_value ":=" expr | 
+	proc_call | 
+	"exit" | 
+	"return" ":" expr | 
+	"if" cond ":" block ("elif" cond ":" block)* ["else" ":" block] |	
+	"loop" [id] ":" block |
+	"break" [":" id] |
+	"continue" [":" id]
+;
+
+block:
+	"begin" (stmt)+ "end" | 
+	stmt // CHECK THAT!!! it had an auto-end
+;
+
+proc_call:
+	id [":" expr ("," expr)*]
+;
+
+func_call:
+	id "(" [expr ("," expr)*] ")"
+;
+
+l_value:
+	id | string_literal | l_value "[" expr "]"
+;
+
+expr:
+	int_const |
+	char_const | 
+	l_value | 
+	"(" expr ")" | 
+	func_call |
+	("+" | "-") expr | 
+	expr ("+" | "-" | "*" | "/" | "%") expr |
+	"true" | "false" | "!" expr | expr ("&" | "|") expr
+;
+
+cond:
+	expr |
+	"(" cond ")" |
+	"not" cond |
+	cond ("and" | "or") cond |
+	expr ("=" | "<>" | "<" | ">" | "<=" | ">=") expr
+;	
+
 %%
 
 
