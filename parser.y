@@ -67,35 +67,66 @@ program:
 ;
 
 func_def:
-	"def" header local_def_req block
+	"def" header local_def_star block
 ;
 
-local_def_req:
-	(local_def)* 
+local_def_star:
+	local_def local_def_star |
+	/*nothing*/ 
 ;
 
 header:
-	id ("is" data_type) (":" fpar_def ("," fpar_def)*)
+	id is_data_type_req fparameters_req
+;
+
+is_data_type_req: /*at most 1*/
+	"is" data_type |
+	/*nothing*/
+;
+
+fparameters_req:
+	":" fpar_def comma_fpar_def_star |
+	/*nothing*/ 
+;
+
+comma_fpar_def_star:
+	"," fpar_def comma_fpar_def_star |
+	/*nothing*/
 ;
 
 fpar_def:
-	(id)+ "as" fpar_type
+	id_plus "as" fpar_type
 ;
+
+id_plus: /*(id)+*/
+	id /*and then nothing*/
+	id id_plus |
+:
 
 data_type:
-	"int" | "byte"
+	"int" | 
+	"byte"
 ;
 
-type:
-	data_type ("[" int_const "]")
+type: /*INT_CONST NEEDS ATTENTION!*/
+	data_type brackets_int_const_star
 ;
 
 fpar_type:
-	type | "ref" data_type | data_type "[" "]" ("[" int_const "]")*
+	type | 
+	"ref" data_type | 
+	data_type "[" "]" brackets_int_const_star
+;
+
+brackets_int_const_star:
+	"[" int_const "]" brackets_int_const_star |
+	/*nothing*/
 ;
 
 local_def:
-	func_def | func_decl | var_def
+	func_def | 
+	func_decl | 
+	var_def
 ;
 
 stmt:
@@ -104,15 +135,40 @@ stmt:
 	proc_call | 
 	"exit" | 
 	"return" ":" expr | 
-	"if" cond ":" block ("elif" cond ":" block)* ["else" ":" block] |	
-	"loop" [id] ":" block |
-	"break" [":" id] |
-	"continue" [":" id]
+	"if" cond ":" block elif_and_block_star else_and_block_req |	
+	"loop" id_req ":" block |
+	"break" colon_id_req |
+	"continue" colon_id_req
+;
+
+id_req:
+	id |
+	/*nothing*/
+;
+
+colon_id_req:
+	":" id |
+	/*nothing*/
+;
+
+elif_and_block_star:
+	"elif" cond ":" block elif_and_block_star |
+	/*nothing*/
+;	
+
+else_and_block_req:
+	"else" ":" block |
+	/*nothing*/
 ;
 
 block:
-	"begin" (stmt)+ "end" | 
-	stmt // CHECK THAT!!! it had an auto-end
+	"begin" stmt_plus "end" | 
+	stmt_plus // CHECK THAT!!! it had an auto-end
+;
+
+stmt_plus:
+	stmt /*and then nothing*/ |
+	stmt stmt_plus
 ;
 
 proc_call:
