@@ -62,6 +62,7 @@ extern int number_of_lines;
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %%
+
 program:
 	func_def
 ;
@@ -76,7 +77,7 @@ local_def_star:
 ;
 
 header:
-	id is_data_type_req fparameters_req
+	T_id is_data_type_req fparameters_req
 ;
 
 is_data_type_req: /*at most 1*/
@@ -99,9 +100,9 @@ fpar_def:
 ;
 
 id_plus: /*(id)+*/
-	id /*and then nothing*/
-	id id_plus |
-:
+	T_id /*and then nothing*/
+	T_id id_plus |
+;
 
 data_type:
 	"int" | 
@@ -119,7 +120,7 @@ fpar_type:
 ;
 
 brackets_int_const_star:
-	"[" int_const "]" brackets_int_const_star |
+	"[" T_int "]" brackets_int_const_star |
 	/*nothing*/
 ;
 
@@ -128,6 +129,13 @@ local_def:
 	func_decl | 
 	var_def
 ;
+
+func_decl: 
+	"decl" header
+;
+
+var_def:
+	"var" id_plus "is" type
 
 stmt:
 	"skip" | 
@@ -142,12 +150,12 @@ stmt:
 ;
 
 id_req:
-	id |
+	T_id |
 	/*nothing*/
 ;
 
 colon_id_req:
-	":" id |
+	":" T_id |
 	/*nothing*/
 ;
 
@@ -172,34 +180,60 @@ stmt_plus:
 ;
 
 proc_call:
-	id [":" expr ("," expr)*]
+	T_id colon_expr_req
 ;
 
+colon_expr_req:
+	":" expr comma_expr_star
+
 func_call:
-	id "(" [expr ("," expr)*] ")"
+	T_id "(" expr_comma_expr_req ")"
+;
+
+expr_comma_expr_req:
+	expr comma_expr_star
+;
+
+comma_expr_star:
+	"," expr comma_expr_star |
+	/*nothing*/
 ;
 
 l_value:
-	id | string_literal | l_value "[" expr "]"
+	T_id | T_string | l_value "[" expr "]"
 ;
 
 expr:
-	int_const |
-	char_const | 
+	T_int |
+	T_char_const | 
 	l_value | 
 	"(" expr ")" | 
 	func_call |
-	("+" | "-") expr | 
-	expr ("+" | "-" | "*" | "/" | "%") expr |
-	"true" | "false" | "!" expr | expr ("&" | "|") expr
+	"+" expr | 
+	"-" expr | 
+	expr "+" expr |
+	expr "-" expr | 
+	expr "*" expr | 
+	expr "/" expr | 
+	expr "%" expr |
+	"true" | "false" |
+	"!" expr | 
+	expr "&" expr |
+	expr "|" expr
 ;
 
 cond:
 	expr |
 	"(" cond ")" |
 	"not" cond |
-	cond ("and" | "or") cond |
-	expr ("=" | "<>" | "<" | ">" | "<=" | ">=") expr
+	cond "and" cond |
+	cond "or"  cond |
+	expr "=" expr |
+	expr "<>" expr |
+	expr "<" expr |
+	expr ">" expr |
+	expr "<=" expr |
+	expr ">=" expr
 ;	
 
 %%
