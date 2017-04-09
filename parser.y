@@ -52,6 +52,11 @@ extern int number_of_lines;
 %token T_hex
 
 
+
+%left "or"
+%left "and"
+%nonassoc "not"
+%nonassoc '=' "<>" '<' '>' "<=" ">="
 %left '+' '-'
 %left '*' '/' '%'
 %left UMINUS
@@ -68,7 +73,7 @@ program:
 ;
 
 func_def:
-	"def" header local_def_star block
+	T_def header local_def_star block
 ;
 
 local_def_star:
@@ -81,32 +86,32 @@ header:
 ;
 
 is_data_type_req: /*at most 1*/
-	"is" data_type |
+	T_is data_type |
 	/*nothing*/
 ;
 
 fparameters_req:
-	":" fpar_def comma_fpar_def_star |
+	':' fpar_def comma_fpar_def_star |
 	/*nothing*/ 
 ;
 
 comma_fpar_def_star:
-	"," fpar_def comma_fpar_def_star |
+	',' fpar_def comma_fpar_def_star |
 	/*nothing*/
 ;
 
 fpar_def:
-	id_plus "as" fpar_type
+	id_plus T_as fpar_type
 ;
 
 id_plus: /*(id)+*/
-	T_id /*and then nothing*/
-	T_id id_plus |
+	T_id /*and then nothing*/ |
+	T_id id_plus
 ;
 
 data_type:
-	"int" | 
-	"byte"
+	T_int | 
+	T_byte
 ;
 
 type: /*INT_CONST NEEDS ATTENTION!*/
@@ -115,12 +120,12 @@ type: /*INT_CONST NEEDS ATTENTION!*/
 
 fpar_type:
 	type | 
-	"ref" data_type | 
-	data_type "[" "]" brackets_int_const_star
+	T_ref data_type | 
+	data_type '[' ']' brackets_int_const_star
 ;
 
 brackets_int_const_star:
-	"[" T_int "]" brackets_int_const_star |
+	'[' T_const ']' brackets_int_const_star |
 	/*nothing*/
 ;
 
@@ -138,39 +143,39 @@ var_def:
 	"var" id_plus "is" type
 
 stmt:
-	"skip" | 
-	l_value ":=" expr | 
+	T_skip | 
+	l_value T_assign expr | 
 	proc_call | 
-	"exit" | 
-	"return" ":" expr | 
-	"if" cond ":" block elif_and_block_star else_and_block_req |	
-	"loop" id_req ":" block |
-	"break" colon_id_req |
-	"continue" colon_id_req
+	T_exit | 
+	T_return ':' expr | 
+	T_if cond ':' block elif_and_block_star else_and_block_req |	
+	T_loop id_req ':' block |
+	T_break colon_id_req |
+	T_continue colon_id_req
 ;
 
 id_req:
-	T_id |
-	/*nothing*/
+	/*nothing*/ |
+	T_id
 ;
 
 colon_id_req:
-	":" T_id |
+	':' T_id |
 	/*nothing*/
 ;
 
 elif_and_block_star:
-	"elif" cond ":" block elif_and_block_star |
+	T_elif cond ':' block elif_and_block_star |
 	/*nothing*/
 ;	
 
 else_and_block_req:
-	"else" ":" block |
+	T_else ':' block |
 	/*nothing*/
 ;
 
 block:
-	"begin" stmt_plus "end" | 
+	T_begin stmt_plus T_end | 
 	stmt_plus // CHECK THAT!!! it had an auto-end
 ;
 
@@ -184,10 +189,10 @@ proc_call:
 ;
 
 colon_expr_req:
-	":" expr comma_expr_star
+	':' expr comma_expr_star
 
 func_call:
-	T_id "(" expr_comma_expr_req ")"
+	T_id '(' expr_comma_expr_req ')'
 ;
 
 expr_comma_expr_req:
@@ -195,53 +200,53 @@ expr_comma_expr_req:
 ;
 
 comma_expr_star:
-	"," expr comma_expr_star |
-	/*nothing*/
+	/*nothing*/ |
+	',' expr comma_expr_star
 ;
 
 l_value:
-	T_id | T_string | l_value "[" expr "]"
+	T_id | T_string | l_value '[' expr ']'
 ;
 
 expr:
-	T_int |
+	T_const |
 	T_char_const | 
 	l_value | 
-	"(" expr ")" | 
+	'(' expr ')' | 
 	func_call |
-	"+" expr | 
-	"-" expr | 
-	expr "+" expr |
-	expr "-" expr | 
-	expr "*" expr | 
-	expr "/" expr | 
-	expr "%" expr |
-	"true" | "false" |
-	"!" expr | 
-	expr "&" expr |
-	expr "|" expr
+	'+' expr | 
+	'-' expr | 
+	expr '+' expr |
+	expr '-' expr | 
+	expr '*' expr | 
+	expr '/' expr | 
+	expr '%' expr |
+	T_true | T_false |
+	'!' expr | 
+	expr '&' expr |
+	expr '|' expr
 ;
 
 cond:
 	expr |
-	"(" cond ")" |
-	"not" cond |
-	cond "and" cond |
-	cond "or"  cond |
-	expr "=" expr |
-	expr "<>" expr |
-	expr "<" expr |
-	expr ">" expr |
-	expr "<=" expr |
-	expr ">=" expr
+	'(' cond ')' |
+	T_not cond |
+	cond T_and cond |
+	cond T_or  cond |
+	expr '=' expr |
+	expr T_not_equal expr |
+	expr '<' expr |
+	expr '>' expr |
+	expr T_less_equal expr |
+	expr T_greater_equal expr
 ;	
 
 %%
 
 
 void yyerror (const char *msg) {
-  fprintf(stderr, "Dana error: %s\n", msg);
-  fprintf(stderr, "Aborting, I've had enough with line %d...\n" , number_of_lines );
+  fprintf(stderr, "DANA ERROR: %s\n", msg);
+  fprintf(stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
   exit(1);
 }
 

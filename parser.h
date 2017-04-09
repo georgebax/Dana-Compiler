@@ -79,7 +79,7 @@ extern int yydebug;
     T_not_equal = 289,
     T_escape = 290,
     T_hex = 291,
-    UMINUS = 292
+    UMINUS = 295
   };
 #endif
 
