@@ -23,13 +23,13 @@ def hanoi is int : a b as ref byte , c as int
 				break:poutsa
 			end
 
-		continue:ss
+		continue:s 		#IGNORE THIS COMMENT
 		x:=funccall(2)
 		pp : 2
 
 		loop x:
-			begin
-				procedure : 3*FUNCTIONCALL(x)/3+2
+			begin	
+				procedure : 3*FUNCTIONCALL(x)/3+2		
 				exit
 			end
 
