@@ -16,6 +16,8 @@
 
 		var numberOfRings is int
 
-		writeString "Rings: "				
+		writeString: "Rings: "				
 		numberOfRings := readInteger()
 		hanoi: numberOfRings, "left","right","middle"
+
+

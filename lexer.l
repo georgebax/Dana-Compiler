@@ -26,7 +26,7 @@ void yyerror (const char *msg);
 /*----------------------------------------Variables----------------------------------------------------------------------------------------------------------------------*/
 int number_of_lines = 1;
 int number_of_errors = 0;
-int comment_depth = 0;
+int nesting = 0;
 int indentation_depth = 0;
 char hex_num[3];
 int tabs = 0;
@@ -112,8 +112,6 @@ var                                                             { flag = 0; retu
 
 {T}+															{ if( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); } }                                                                  
 
-\n 																{ number_of_lines++; }
-
 
 \'{HEN}\'														{ flag = 0; return T_hex; }
 
@@ -127,13 +125,19 @@ var                                                             { flag = 0; retu
 \"({QC}|{SC})*\"												{ flag = 0; return T_string; }
 
 
-"#".*\n						                        			{ /*nothing*/ }
+"#".*						                        			{ number_of_lines++; }
 
 
-"(*" 															{ comment_depth++; }
+
+"(*"															{ nesting = 1; BEGIN( COMMENT );}
+<COMMENT>"(*" 													{ nesting++; }
+<COMMENT>"*)"		  				               	            { nesting--; if( nesting == 0 ) BEGIN( INITIAL ); }
+<COMMENT>"\n"													{ number_of_lines++; }
+<COMMENT>"*"													{ /*nothing*/ }
+<COMMENT>[^*\n]													{ /*nothing*/ }
 
 
-"*)"		  				                    	            { comment_depth--; }
+\n 																{ number_of_lines++; }
 
 
 "+"																{ flag = 0; return yytext[0]; }

@@ -72,14 +72,15 @@ extern int yydebug;
     T_string = 282,
     T_id = 283,
     T_const = 284,
-    T_greater_equal = 285,
-    T_less_equal = 286,
-    T_assign = 287,
-    T_char_const = 288,
-    T_not_equal = 289,
+    T_not_equal = 285,
+    T_greater_equal = 286,
+    T_less_equal = 287,
+    T_assign = 288,
+    T_char_const = 289,
     T_escape = 290,
     T_hex = 291,
-    UMINUS = 295
+    UMINUS = 293,
+    UPLUS = 294
   };
 #endif
 

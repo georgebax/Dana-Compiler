@@ -8,7 +8,7 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-void yyerror (const char *msg);
+void yyerror ( const char *msg );
 extern int number_of_lines;
 
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
@@ -43,25 +43,23 @@ extern int number_of_lines;
 %token T_string
 %token T_id
 %token T_const
-%token T_greater_equal
-%token T_less_equal
+%token T_not_equal "<>"
+%token T_greater_equal ">="
+%token T_less_equal "<="
 %token T_assign
 %token T_char_const
-%token T_not_equal
 %token T_escape
 %token T_hex
 
 
-
-%left "or"
-%left "and"
-%nonassoc "not"
+%nonassoc "!"
+%left UMINUS UPLUS
+%left '*' '/' '%' '&'
+%left '+' '-' '|'
 %nonassoc '=' "<>" '<' '>' "<=" ">="
-%left '+' '-'
-%left '*' '/' '%'
-%left UMINUS
-
-
+%nonassoc "not"
+%left "and"
+%left "or"
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -180,8 +178,8 @@ block:
 ;
 
 stmt_plus:
-	stmt /*and then nothing*/ |
-	stmt stmt_plus
+	stmt stmt_plus |
+	stmt /*and then nothing*/
 ;
 
 proc_call:
@@ -189,6 +187,7 @@ proc_call:
 ;
 
 colon_expr_req:
+	/*nothing*/ |
 	':' expr comma_expr_star
 
 func_call:
@@ -196,6 +195,7 @@ func_call:
 ;
 
 expr_comma_expr_req:
+	/*nothing*/ |
 	expr comma_expr_star
 ;
 
@@ -228,8 +228,8 @@ expr:
 ;
 
 cond:
-	expr |
 	'(' cond ')' |
+	expr |
 	T_not cond |
 	cond T_and cond |
 	cond T_or  cond |
@@ -237,22 +237,23 @@ cond:
 	expr T_not_equal expr |
 	expr '<' expr |
 	expr '>' expr |
-	expr T_less_equal expr |
-	expr T_greater_equal expr
+	expr T_greater_equal expr |
+	expr T_less_equal expr
 ;	
 
 %%
 
 
-void yyerror (const char *msg) {
-  fprintf(stderr, "DANA ERROR: %s\n", msg);
-  fprintf(stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
-  exit(1);
+void yyerror ( const char *msg ) {
+  fprintf( stderr, "DANA ERROR: %s\n" , msg );
+  fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
+  exit( 1 );
 }
 
 
 int main() {
-  if (yyparse()) return 1;
-  printf("Compilation was successful.\n");
+  if ( yyparse() ) return 1;
+  printf( "COMPILATION SUCCESSFULL!!\n" );
+  printf( "Total number of lines : %d\n" , number_of_lines );
   return 0;
 }
