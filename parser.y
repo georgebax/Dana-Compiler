@@ -54,8 +54,8 @@ extern int number_of_lines;
 
 %nonassoc "!"
 %left UMINUS UPLUS
-%left '*' '/' '%' '&'
 %left '+' '-' '|'
+%left '*' '/' '%' '&'
 %nonassoc '=' "<>" '<' '>' "<=" ">="
 %nonassoc "not"
 %left "and"
