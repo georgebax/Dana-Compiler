@@ -178,7 +178,7 @@ block:
 ;
 
 stmt_plus:
-	stmt stmt_plus |
+	stmt T_begin stmt_plus T_end | /*EXPERIMENTAL*/
 	stmt /*and then nothing*/
 ;
 
