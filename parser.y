@@ -52,7 +52,7 @@ extern int number_of_lines;
 %token T_hex
 
 
-%nonassoc "!"
+%nonassoc '!'
 %left UMINUS UPLUS
 %left '+' '-' '|'
 %left '*' '/' '%' '&'
@@ -173,12 +173,12 @@ else_and_block_req:
 ;
 
 block:
-	T_begin stmt_plus T_end | 
-	stmt_plus // CHECK THAT!!! it had an auto-end
+	T_begin stmt_plus T_end /*| 
+	stmt_plus // CHECK THAT!!! it had an auto-end*/
 ;
 
 stmt_plus:
-	stmt T_begin stmt_plus T_end | /*EXPERIMENTAL*/
+	stmt stmt_plus | /*EXPERIMENTAL*/
 	stmt /*and then nothing*/
 ;
 
