@@ -2,8 +2,6 @@
 
 /*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
 fix many line comments.We don't need to return anything!!!!
-
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -107,10 +105,21 @@ var                                                             { flag = 0; retu
 
 \n{T}+															{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
-																  tabs = tabs-tab_start; }
+																  tabs = tabs-tab_start; 
+																  printf("tabs = %d\n", tabs);
+																  printf("indentation_depth = %d\n", indentation_depth);
+																  if ( tabs > indentation_depth ) { 
+																  	printf("begin\n");
+																  	indentation_depth = tabs;
+																  	return T_begin; }
+																  if ( tabs < indentation_depth ) {
+																  	printf("end\n");
+																  	indentation_depth = tabs;
+																  	return T_end; }
+																  }
 
 
-{T}+															{ if( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); } }                                                                  
+{T}+															{ if ( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); } }                                                                  
 
 
 \'{HEN}\'														{ flag = 0; return T_hex; }
@@ -131,8 +140,9 @@ var                                                             { flag = 0; retu
 
 "(*"															{ nesting = 1; BEGIN( COMMENT );}
 <COMMENT>"(*" 													{ nesting++; }
-<COMMENT>"*)"		  				               	            { nesting--; if( nesting == 0 ) BEGIN( INITIAL ); }
+<COMMENT>"*)"		  				               	            { nesting--; if ( nesting == 0 ) BEGIN( INITIAL ); }
 <COMMENT>"\n"													{ number_of_lines++; }
+<COMMENT><<EOF>>    											{ yyerror( "EOF encountered inside comment" ); }
 <COMMENT>"*"													{ /*nothing*/ }
 <COMMENT>[^*\n]													{ /*nothing*/ }
 
@@ -198,7 +208,7 @@ int count_tabs( char *txt )
 {
 	int i;
 	int num_of_tabs = 0;
-	for( i = 0; i <= strlen(txt); i++ )
+	for ( i = 0; i <= strlen(txt); i++ )
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
 	return num_of_tabs;
