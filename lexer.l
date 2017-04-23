@@ -18,6 +18,7 @@ fix many line comments.We don't need to return anything!!!!
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 int count_tabs(char *txt );
 void yyerror (const char *msg);
+void yyerror ( const char *msg );
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -47,100 +48,107 @@ W [ ]
 T [\t]
 
 %x COMMENT
-
+%s BEGEND
+%s INDENT
 
 %%
 
-begin 															{ flag = 0; return T_begin; }
+<BEGEND>"begin"													{ return T_begin; }
 
-end 															{ flag = 0; return T_end; }
+<BEGEND>"end"													{ return T_end; }
 
-and                                                             { flag = 0; return T_and; }
+<INDENT>"begin"													{ yyerror( "\"Begin\" keyword not supported in this mode!" ); }
 
-as                                                             	{ flag = 0; return T_as; }
+<INDENT>"end"													{ yyerror( "\"End\" keyword not supported in this mode!" ); }
 
-break                                                           { flag = 0; return T_break; }
+and                                                             { return T_and; }
 
-def																{ flag = 0; return T_def; }
+as                                                             	{ return T_as; }
 
-byte                                                            { flag = 0; return T_byte; }
+break                                                           { return T_break; }
 
-continue                                                        { flag = 0; return T_continue; }
+def																{ return T_def; }
 
-decl                                                            { flag = 0; return T_decl; }
+byte                                                            { return T_byte; }
 
-elif                                                            { flag = 0; return T_elif; }
+continue                                                        { return T_continue; }
 
-else                                                            { flag = 0; return T_else; }
+decl                                                            { return T_decl; }
 
-exit                                                            { flag = 0; return T_exit; }
+elif                                                            { return T_elif; }
 
-false															{ flag = 0; return T_false; }
+else                                                            { return T_else; }
 
-if                                                              { flag = 0; return T_if; }
+exit                                                            { return T_exit; }
 
-is                                                              { flag = 0; return T_is; }
+false															{ return T_false; }
 
-int                                                             { flag = 0; return T_int; }
+if                                                              { return T_if; }
 
-loop                                                            { flag = 0; return T_loop; }
+is                                                              { return T_is; }
 
-not                                                             { flag = 0; return T_not; }
+int                                                             { return T_int; }
 
-or                                                              { flag = 0; return T_or; }
+loop                                                            { return T_loop; }
 
-ref                                                             { flag = 0; return T_ref; }
+not                                                             { return T_not; }
 
-return                                                          { flag = 0; return T_return; }
+or                                                              { return T_or; }
 
-skip                                                            { flag = 0; return T_skip; }
+ref                                                             { return T_ref; }
 
-true                                                            { flag = 0; return T_true; }
+return                                                          { return T_return; }
 
-var                                                             { flag = 0; return T_var; }
+skip                                                            { return T_skip; }
 
-{D}+								 							{ flag = 0; return T_const; }
+true                                                            { return T_true; }
 
-{L}({L}|{D}|"_")*												{ flag = 0; return T_id; }
+var                                                             { return T_var; }
 
-\n{T}+															{ number_of_lines++;
+{D}+								 							{ return T_const; }
+
+{L}({L}|{D}|"_")*												{ return T_id; }
+
+<INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
-																  tabs = tabs-tab_start; 
-																  printf("tabs = %d\n", tabs);
-																  printf("indentation_depth = %d\n", indentation_depth);
+																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
+																  printf("previous indentation_depth = %d\n", indentation_depth);
 																  if ( tabs > indentation_depth ) { 
 																  	printf("begin\n");
 																  	indentation_depth = tabs;
-																  	return T_begin; }
+																    printf("new indentation_depth = %d\n", indentation_depth);
+																  	return T_begin; 
+																  }
 																  if ( tabs < indentation_depth ) {
 																  	printf("end\n");
 																  	indentation_depth = tabs;
-																  	return T_end; }
+																  	printf("new indentation_depth = %d\n", indentation_depth);
+																  	return T_end; 
+																  }
+																  printf("> No indent action taken!\n");
 																  }
 
+<BEGEND>\n{T}+													{number_of_lines++;}
 
-{T}+															{ if ( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); } }                                                                  
-
-
-\'{HEN}\'														{ flag = 0; return T_hex; }
+\'{HEN}\'														{ return T_hex; }
 
 
-\'{ESC}\'														{ flag = 0; return T_escape; }
+\'{ESC}\'														{ return T_escape; }
 
 
-\'({C})\' 														{ flag = 0; return T_char_const; }
+\'({C})\' 														{ return T_char_const; }
 
 
-\"({QC}|{SC})*\"												{ flag = 0; return T_string; }
+\"({QC}|{SC})*\"												{ return T_string; }
 
 
 "#".*						                        			{ number_of_lines++; }
 
 
 
-"(*"															{ nesting = 1; BEGIN( COMMENT );}
+"(*"															{ nesting = 1; BEGIN(COMMENT);}
 <COMMENT>"(*" 													{ nesting++; }
-<COMMENT>"*)"		  				               	            { nesting--; if ( nesting == 0 ) BEGIN( INITIAL ); }
+<COMMENT>"*)"		  				               	            { nesting--; if ( nesting == 0 ) BEGIN(INITIAL); }
 <COMMENT>"\n"													{ number_of_lines++; }
 <COMMENT><<EOF>>    											{ yyerror( "EOF encountered inside comment" ); }
 <COMMENT>"*"													{ /*nothing*/ }
@@ -150,55 +158,55 @@ var                                                             { flag = 0; retu
 \n 																{ number_of_lines++; }
 
 
-"+"																{ flag = 0; return yytext[0]; }
+"+"																{ return yytext[0]; }
 
 
-"-"																{ flag = 0; return yytext[0]; }
+"-"																{ return yytext[0]; }
 
 
-"*"																{ flag = 0; return yytext[0]; }
+"*"																{ return yytext[0]; }
 
 	
-"/" 		                            		                { flag = 0; return yytext[0]; }
+"/" 		                            		                { return yytext[0]; }
 
-"%"                                                             { flag = 0; return yytext[0]; }
+"%"                                                             { return yytext[0]; }
 
-"!"                                                             { flag = 0; return yytext[0]; }
+"!"                                                             { return yytext[0]; }
 
-"&"                                                             { flag = 0; return yytext[0]; }
+"&"                                                             { return yytext[0]; }
 
-"|"                                                             { flag = 0; return yytext[0]; }
+"|"                                                             { return yytext[0]; }
 
-"="                                                             { flag = 0; return yytext[0]; }
+"="                                                             { return yytext[0]; }
 
-"<>"                                                            { flag = 0; return T_not_equal; }	
+"<>"                                                            { return T_not_equal; }	
 
-"<"                                                             { flag = 0; return yytext[0]; }
+"<"                                                             { return yytext[0]; }
 
-">"                                                             { flag = 0; return yytext[0]; }
+">"                                                             { return yytext[0]; }
 
-"<="                                                            { flag = 0; return T_less_equal; }
+"<="                                                            { return T_less_equal; }
 
-">="                                                            { flag = 0; return T_greater_equal; }
+">="                                                            { return T_greater_equal; }
 
-"("																{ flag = 0; return yytext[0]; }
+"("																{ return yytext[0]; }
 
-")"																{ flag = 0; return yytext[0]; }
+")"																{ return yytext[0]; }
 
-"["																{ flag = 0; return yytext[0]; }
+"["																{ return yytext[0]; }
 	
-"]"																{ flag = 0; return yytext[0]; }
+"]"																{ return yytext[0]; }
 
-","																{ flag = 0; return yytext[0]; }
+","																{ return yytext[0]; }
 
-":"																{ flag = 0; return yytext[0]; }
+":"																{ return yytext[0]; }
 
-":="															{ flag = 0; return T_assign; }
+":="															{ return T_assign; }
 
 {W}|{T}															/* do nothing! */ 
 
 
-.																{ flag = 0; number_of_errors++; 
+.																{ number_of_errors++; 
 																  yyerror( "illegal character" ); }
 
 
@@ -212,4 +220,63 @@ int count_tabs( char *txt )
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
 	return num_of_tabs;
+}
+
+void usageInformation() {
+	    fprintf(stderr,
+        "\n  Usage"
+        "\n    $ dana [option] [input file]"
+        "\n"
+        "\n  Options"
+        "\n    --indents, -i\tCompile using indentation instead of begin-end keywords"
+        "\n    --help, -h   \tDisplay help message"
+        "\n"
+    );
+    exit(1);
+}
+
+void fatal(char *msg) {
+	fprintf(stderr, "%s\n", msg);
+	exit(2);
+}
+
+void yyerror ( const char *msg ) {
+	fprintf( stderr, "DANA ERROR: %s\n" , msg );
+ 	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
+  	exit( 1 );
+}
+
+
+
+int main(int argc, char *argv[]) {
+
+    FILE *fp;
+
+    if (argc == 1) fatal("Too few arguments! Type dana --help,-h for usage information");
+
+    if (strcmp(argv[1],"-i") == 0 || strcmp(argv[1],"--indents") == 0) {
+        printf(">> Indentation mode\n");
+		yyin = fopen(argv[2], "r"); //Open file and redirect yylex to it
+		if (yyin == NULL) fatal("File not found");
+        fp = fopen(argv[2], "r");
+        yyrestart(fp); 
+        BEGIN(INDENT);
+    }
+    else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
+        usageInformation();
+    }
+    else { // DEFAULT (BEGIN-END)
+        printf(">> Default mode\n");
+        fp = fopen(argv[1], "r");
+        yyrestart(fp);
+        BEGIN(BEGEND);
+    }
+
+    int token;
+
+    do {
+        token = yylex();
+        printf("@ line:%d \t token=%d \t lexeme=\"%s\"\n", number_of_lines, token, yytext);
+    } while (token != T_eof);
+    return 0;
 }

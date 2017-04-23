@@ -1603,15 +1603,36 @@ yyreturn:
 
 
 void yyerror ( const char *msg ) {
-  fprintf( stderr, "DANA ERROR: %s\n" , msg );
-  fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
-  exit( 1 );
+	fprintf( stderr, "DANA ERROR: %s\n" , msg );
+ 	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
+  	exit( 1 );
 }
 
 
-int main() {
-  if ( yyparse() ) return 1;
-  printf( "COMPILATION SUCCESSFULL!!\n" );
-  printf( "Total number of lines : %d\n" , number_of_lines );
-  return 0;
+int main(int argc, char *argv[]) {
+	FILE *fp;
+
+	if (argc == 1) fatal("Too few arguments! Type dana --help,-h for usage information");
+
+	if (strcmp(argv[1],"-i") == 0 || strcmp(argv[1],"--indents") == 0) {
+		//yyin = fopen(filename, "r"); //Open file and redirect yylex to it
+	    fp = fopen(argv[2], "r");
+		if (fp == NULL) fatal("File not found");
+	    yyrestart(fp); 
+	    BEGIN(INDENT);
+	}
+	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
+	    usageInformation();
+	}
+	else { // DEFAULT (BEGIN-END)
+	    fp = fopen(argv[1], "r");
+	    yyrestart(fp);
+	    BEGIN(BEGINEND);
+    }
+
+  	if ( yyparse() ) return 1;
+
+	printf( "COMPILATION SUCCESSFULL!!\n" );
+	printf( "Total number of lines : %d\n" , number_of_lines );
+	return 0;
 }

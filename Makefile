@@ -1,26 +1,11 @@
-.PHONY: clean distclean default
+lexer: lex.yy.c
+	gcc $< -lfl -o lexer
 
-CC=gcc
-CFLAGS=-Wall
-
-default: dana
-
-lexer.c: lexer.l
-	flex -s -o lexer.c lexer.l
-
-lexer.o: lexer.c parser.h
-
-parser.h parser.c: parser.y
-	bison -dv -o parser.c parser.y
-
-parser.o: parser.c
-
-dana: lexer.o parser.o
-	$(CC) $(CFLAGS) -o dana $^ -lfl
+lex.yy.c: lexer.l
+	flex $<
 
 clean:
-	$(RM) lexer.c parser.c parser.h parser.output *.o *~
+	$(RM) *.o lex.yy.c
 
 distclean: clean
-	$(RM) dana
-
+	$(RM) lexer
