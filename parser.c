@@ -65,10 +65,12 @@
 #line 1 "parser.y" /* yacc.c:339  */
 
 
+
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lexer.h"
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -80,7 +82,7 @@ extern int number_of_lines;
 
 
 
-#line 84 "parser.c" /* yacc.c:339  */
+#line 86 "parser.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -170,7 +172,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 174 "parser.c" /* yacc.c:358  */
+#line 176 "parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -471,15 +473,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    70,    70,    74,    78,    78,    83,    87,    87,    92,
-      92,    97,    97,   102,   106,   107,   111,   112,   116,   120,
-     121,   122,   126,   126,   131,   132,   133,   137,   141,   144,
-     145,   146,   147,   148,   149,   150,   151,   152,   155,   157,
-     161,   161,   166,   166,   171,   171,   176,   181,   182,   186,
-     189,   191,   194,   197,   199,   202,   204,   208,   208,   208,
-     212,   213,   214,   215,   216,   217,   218,   219,   220,   221,
-     222,   223,   224,   224,   225,   226,   227,   231,   232,   233,
-     234,   235,   236,   237,   238,   239,   240,   241
+       0,    72,    72,    76,    80,    80,    85,    89,    89,    94,
+      94,    99,    99,   104,   108,   109,   113,   114,   118,   122,
+     123,   124,   128,   128,   133,   134,   135,   139,   143,   146,
+     147,   148,   149,   150,   151,   152,   153,   154,   157,   159,
+     163,   163,   168,   168,   173,   173,   178,   183,   184,   188,
+     191,   193,   196,   199,   201,   204,   206,   210,   210,   210,
+     214,   215,   216,   217,   218,   219,   220,   221,   222,   223,
+     224,   225,   226,   226,   227,   228,   229,   233,   234,   235,
+     236,   237,   238,   239,   240,   241,   242,   243
 };
 #endif
 
@@ -1370,7 +1372,7 @@ yyreduce:
   switch (yyn)
     {
       
-#line 1374 "parser.c" /* yacc.c:1646  */
+#line 1376 "parser.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1598,15 +1600,15 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 244 "parser.y" /* yacc.c:1906  */
+#line 246 "parser.y" /* yacc.c:1906  */
 
 
 
-void yyerror ( const char *msg ) {
+/*void yyerror ( const char *msg ) {
 	fprintf( stderr, "DANA ERROR: %s\n" , msg );
  	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
   	exit( 1 );
-}
+}*/
 
 
 int main(int argc, char *argv[]) {
@@ -1618,16 +1620,20 @@ int main(int argc, char *argv[]) {
 		//yyin = fopen(filename, "r"); //Open file and redirect yylex to it
 	    fp = fopen(argv[2], "r");
 		if (fp == NULL) fatal("File not found");
+		printf("> Indent mode\n");
 	    yyrestart(fp); 
-	    BEGIN(INDENT);
+	    begin_indent_mode();
+	    // BEGIN(INDENT);
 	}
 	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
 	    usageInformation();
 	}
 	else { // DEFAULT (BEGIN-END)
 	    fp = fopen(argv[1], "r");
+	    printf("> Default mode\n");
 	    yyrestart(fp);
-	    BEGIN(BEGINEND);
+	    begin_default_mode();
+	    // BEGIN(BEGINEND);
     }
 
   	if ( yyparse() ) return 1;

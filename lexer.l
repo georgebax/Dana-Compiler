@@ -10,6 +10,7 @@ fix many line comments.We don't need to return anything!!!!
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
+#include "lexer.h"
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -18,7 +19,8 @@ fix many line comments.We don't need to return anything!!!!
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 int count_tabs(char *txt );
 void yyerror (const char *msg);
-void yyerror ( const char *msg );
+void begin_indent_mode();
+void begin_default_mode();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -53,7 +55,7 @@ T [\t]
 
 %%
 
-<BEGEND>"begin"													{ return T_begin; }
+<BEGEND>"begin"													{ printf("beginnnn\n"); return T_begin; }
 
 <BEGEND>"end"													{ return T_end; }
 
@@ -247,7 +249,17 @@ void yyerror ( const char *msg ) {
 }
 
 
+void begin_default_mode() {
+	printf("> Default\n");
+	BEGIN(BEGEND);
+}
 
+void begin_indent_mode() {
+	printf("> Indent\n");
+	BEGIN(INDENT);
+}
+
+/*
 int main(int argc, char *argv[]) {
 
     FILE *fp;
@@ -280,3 +292,4 @@ int main(int argc, char *argv[]) {
     } while (token != T_eof);
     return 0;
 }
+*/

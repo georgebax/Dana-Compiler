@@ -1,9 +1,11 @@
 %{
 
+
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lexer.h"
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -244,11 +246,11 @@ cond:
 %%
 
 
-void yyerror ( const char *msg ) {
+/*void yyerror ( const char *msg ) {
 	fprintf( stderr, "DANA ERROR: %s\n" , msg );
  	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
   	exit( 1 );
-}
+}*/
 
 
 int main(int argc, char *argv[]) {
@@ -260,16 +262,20 @@ int main(int argc, char *argv[]) {
 		//yyin = fopen(filename, "r"); //Open file and redirect yylex to it
 	    fp = fopen(argv[2], "r");
 		if (fp == NULL) fatal("File not found");
+		printf("> Indent mode\n");
 	    yyrestart(fp); 
-	    BEGIN(INDENT);
+	    begin_indent_mode();
+	    // BEGIN(INDENT);
 	}
 	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
 	    usageInformation();
 	}
 	else { // DEFAULT (BEGIN-END)
 	    fp = fopen(argv[1], "r");
+	    printf("> Default mode\n");
 	    yyrestart(fp);
-	    BEGIN(BEGINEND);
+	    begin_default_mode();
+	    // BEGIN(BEGINEND);
     }
 
   	if ( yyparse() ) return 1;
