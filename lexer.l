@@ -128,7 +128,7 @@ var                                                             { return T_var; 
 																  printf("> No indent action taken!\n");
 																  }
 
-<BEGEND>\n{T}+													{number_of_lines++;}
+<BEGEND>\n{T}+													{ number_of_lines++; }
 
 \'{HEN}\'														{ return T_hex; }
 
