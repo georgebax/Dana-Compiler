@@ -33,6 +33,8 @@ char hex_num[3];
 int tabs = 0;
 int tab_start = 0;
 int flag = 1;
+int no_of_begins = 0;
+int no_of_ends = 0;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -55,9 +57,9 @@ T [\t]
 
 %%
 
-<BEGEND>"begin"													{ printf("beginnnn\n"); return T_begin; }
+<BEGEND>"begin"													{ no_of_begins++; return T_begin; }
 
-<BEGEND>"end"													{ return T_end; }
+<BEGEND>"end"													{ no_of_ends++; return T_end; }
 
 <INDENT>"begin"													{ yyerror( "\"Begin\" keyword not supported in this mode!" ); }
 
@@ -116,21 +118,35 @@ var                                                             { return T_var; 
 																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
 																  printf("previous indentation_depth = %d\n", indentation_depth);
 																  if ( tabs > indentation_depth ) { 
-																  	printf("begin\n");
 																  	indentation_depth = tabs;
 																    printf("new indentation_depth = %d\n", indentation_depth);
+																  	printf("> Returning begin\n");
+																  	no_of_begins++;
 																  	return T_begin; 
 																  }
 																  if ( tabs < indentation_depth ) {
 																  	printf("end\n");
 																  	indentation_depth = tabs;
 																  	printf("new indentation_depth = %d\n", indentation_depth);
+																  	no_of_ends++;
 																  	return T_end; 
 																  }
 																  printf("> No indent action taken!\n");
-																  }
+																}
 
-<BEGEND>\n{T}+													{number_of_lines++;}
+<INDENT><<EOF>>													{ printf("Encountered EOF\n");
+																  if ( no_of_begins > no_of_ends ) {
+																  	no_of_ends++;
+																  	printf("returning end!\n");
+																  	return T_end;
+																  }
+  																  printf("returning eof!\n");
+																  return T_eof;
+																}															
+
+<BEGEND>\n{T}+													{ printf("poutsamou\n"); number_of_lines++; }
+
+<BEGEND>{T}+													{ printf("poutsamas\n"); }
 
 \'{HEN}\'														{ return T_hex; }
 
