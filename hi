@@ -1,3 +1,7 @@
 def hello
-	writeString: "hello world\n"
-
+var sg is byte
+	writeString: "oy m8"
+	writeString: "dfg"
+	if myballs > 2:
+		writeString: "shieet mane"
+	writeString: "ayy"
