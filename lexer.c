@@ -2268,8 +2268,7 @@ void yyfree (void * ptr )
 
 
 
-int count_tabs( char *txt )
-{
+int count_tabs( char *txt ) {
 	int i;
 	int num_of_tabs = 0;
 	for ( i = 0; i <= strlen(txt); i++ )

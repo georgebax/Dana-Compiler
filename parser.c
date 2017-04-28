@@ -473,15 +473,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    72,    72,    76,    80,    80,    85,    89,    89,    94,
-      94,    99,    99,   104,   108,   109,   113,   114,   118,   122,
-     123,   124,   128,   128,   133,   134,   135,   139,   143,   146,
-     147,   148,   149,   150,   151,   152,   153,   154,   157,   159,
-     163,   163,   168,   168,   173,   173,   178,   183,   184,   188,
-     191,   193,   196,   199,   201,   204,   206,   210,   210,   210,
-     214,   215,   216,   217,   218,   219,   220,   221,   222,   223,
-     224,   225,   226,   226,   227,   228,   229,   233,   234,   235,
-     236,   237,   238,   239,   240,   241,   242,   243
+       0,    72,    72,    76,    80,    80,    85,    89,    90,    94,
+      95,    99,   100,   104,   108,   109,   113,   114,   118,   122,
+     123,   124,   128,   129,   133,   134,   135,   139,   143,   147,
+     148,   149,   150,   151,   152,   153,   154,   155,   158,   160,
+     164,   165,   169,   170,   174,   175,   179,   183,   184,   188,
+     191,   193,   197,   200,   202,   205,   207,   211,   211,   211,
+     215,   216,   217,   218,   219,   220,   221,   222,   223,   224,
+     225,   226,   227,   227,   228,   229,   230,   234,   235,   236,
+     237,   238,   239,   240,   241,   242,   243,   244
 };
 #endif
 
@@ -1600,15 +1600,8 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 246 "parser.y" /* yacc.c:1906  */
+#line 248 "parser.y" /* yacc.c:1906  */
 
-
-
-/*void yyerror ( const char *msg ) {
-	fprintf( stderr, "DANA ERROR: %s\n" , msg );
- 	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
-  	exit( 1 );
-}*/
 
 
 int main(int argc, char *argv[]) {
@@ -1625,9 +1618,8 @@ int main(int argc, char *argv[]) {
 	    begin_indent_mode();
 	    // BEGIN(INDENT);
 	}
-	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
+	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0)
 	    usageInformation();
-	}
 	else { // DEFAULT (BEGIN-END)
 	    fp = fopen(argv[1], "r");
 	    printf("> Default mode\n");

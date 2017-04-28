@@ -1,7 +1,11 @@
 def hello
 var sg is byte
+begin
 	writeString: "oy m8"
 	writeString: "dfg"
 	if myballs > 2:
+	begin
 		writeString: "shieet mane"
+	end
 	writeString: "ayy"
+end
