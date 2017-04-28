@@ -1,9 +1,7 @@
 %{
 
-/*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
-fix many line comments.We don't need to return anything!!!!
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+#define true 1
+#define false 0
 
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
@@ -113,6 +111,8 @@ var                                                             { return T_var; 
 
 {L}({L}|{D}|"_")*												{ return T_id; }
 
+<INDENT>\n{T}+"#".*					                        	{ puts("ayy"); number_of_lines++; /*this fixes the error when a comment line starts with tabs*/}
+
 <INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
 																  //printf("tabs = %d in line %d\n", tabs, number_of_lines);
@@ -120,24 +120,34 @@ var                                                             { return T_var; 
 																  if ( tabs > indentation_depth ) { 
 																  	indentation_depth = tabs;
 																    //printf("new indentation_depth = %d\n", indentation_depth);
-																  	printf("> Returning begin, @ %d\n", number_of_lines);
-																  	no_of_begins++;
-																  	return T_begin; 
+																  	if (check_def_case()) {
+																  		puts(">>> ind def");
+																  		return T_ind_def;
+																  	}
+																  	else {
+																	  	no_of_begins++;
+																	  	printf("> Returning begin, @ %d\n", number_of_lines);
+																	  	printf(">> no_of_begins = %d\n", no_of_begins);
+																	  	return T_begin; 
+																  	}
 																  }
 																  if ( tabs < indentation_depth ) {
 																  	//printf("end\n");
 																  	indentation_depth = tabs;
 																  	//printf("new indentation_depth = %d\n", indentation_depth);
 																  	no_of_ends++;
+																  	printf("> Returning end,   @ %d\n", number_of_lines);
+																  	printf(">> no_of_ends = %d\n", no_of_ends);
 																  	return T_end; 
 																  }
 																  //printf("> No indent action taken!\n");
 																}
 
+
 <INDENT><<EOF>>													{ printf("Encountered EOF\n");
 																  if ( no_of_begins > no_of_ends ) {
 																  	no_of_ends++;
-																  	printf("> Returning end, @ %d\n", number_of_lines);
+																  	printf("> Returning end,   @ %d\n", number_of_lines);
 																  	return T_end;
 																  }
   																  printf("> Returning EOF!\n");
@@ -236,6 +246,30 @@ int count_tabs( char *txt ) {
 		if ( txt[ i ] == '\t' )
 			num_of_tabs++;
 	return num_of_tabs;
+}
+
+int check_def_case() {
+	int i; 
+	char c;
+	if ( ((c = input()) == EOF) || (c != 'd') ) {
+		unput('d');
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'e') ) {
+		unput('e'); // unput from finish to start!
+		unput('d'); 
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'f') ) {
+		unput('f'); // unput from finish to start!		
+		unput('e'); 
+		unput('d'); 
+		return false;
+	}
+	unput('f'); // unput from finish to start!		
+	unput('e'); 
+	unput('d'); 
+	return true;
 }
 
 void usageInformation() {

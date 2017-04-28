@@ -53,6 +53,7 @@ extern int number_of_lines;
 %token T_escape
 %token T_hex
 
+%token T_ind_def
 
 %nonassoc '!'
 %left UMINUS UPLUS
@@ -73,12 +74,17 @@ program
 ;
 
 func_def
-:	T_def header local_def_star block
+:	T_def header T_ind_def_req local_def_star block
+;
+
+T_ind_def_req
+:	T_ind_def
+|	/*nothing*/
 ;
 
 local_def_star
-:	local_def local_def_star |
-	/*nothing*/ 
+:	local_def local_def_star
+|	/*nothing*/ 
 ;
 
 header

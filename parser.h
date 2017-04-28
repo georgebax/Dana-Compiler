@@ -79,8 +79,9 @@ extern int yydebug;
     T_char_const = 289,
     T_escape = 290,
     T_hex = 291,
-    UMINUS = 292,
-    UPLUS = 293
+    T_ind_def = 292,
+    UMINUS = 293,
+    UPLUS = 294
   };
 #endif
 
