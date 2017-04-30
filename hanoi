@@ -14,3 +14,5 @@ def move: source target as byte []
 		writeString: "Rings: "				
 		numberOfRings := readInteger()
 		hanoi: numberOfRings, "left","right","middle"
+	writeString: "fac"
+	writeString: "mane"

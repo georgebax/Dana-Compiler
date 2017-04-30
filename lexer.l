@@ -19,6 +19,8 @@ int count_tabs(char *txt );
 void yyerror (const char *msg);
 void begin_indent_mode();
 void begin_default_mode();
+int check_def_case();
+int check_var_case();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -124,6 +126,9 @@ var                                                             { return T_var; 
 																  		puts(">>> ind def");
 																  		return T_ind_def;
 																  	}
+																  	if (check_var_case()) {
+																  		puts(">>> ind var");
+																  	}
 																  	else {
 																	  	no_of_begins++;
 																	  	printf("> Returning begin, @ %d\n", number_of_lines);
@@ -154,7 +159,7 @@ var                                                             { return T_var; 
 																  return T_eof;
 																}															
 
-<BEGEND>\n{T}+													{ /*printf("poutsamou\n");*/ number_of_lines++; }
+<BEGEND>\n{T}+													{ number_of_lines++; }
 
 
 \'{HEN}\'														{ return T_hex; }
@@ -249,7 +254,6 @@ int count_tabs( char *txt ) {
 }
 
 int check_def_case() {
-	int i; 
 	char c;
 	if ( ((c = input()) == EOF) || (c != 'd') ) {
 		unput('d');
@@ -269,6 +273,29 @@ int check_def_case() {
 	unput('f'); // unput from finish to start!		
 	unput('e'); 
 	unput('d'); 
+	return true;
+}
+
+int check_var_case() {
+	char c;
+	if ( ((c = input()) == EOF) || (c != 'v') ) {
+		unput('v');
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'a') ) {
+		unput('a'); // unput from finish to start!
+		unput('v'); 
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'r') ) {
+		unput('r'); // unput from finish to start!		
+		unput('a'); 
+		unput('v'); 
+		return false;
+	}
+	unput('r'); // unput from finish to start!		
+	unput('a'); 
+	unput('v'); 
 	return true;
 }
 
