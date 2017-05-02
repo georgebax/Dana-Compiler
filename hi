@@ -1,11 +1,24 @@
 def hello
 var sg is byte
+def ayy
+begin
+	writeString: "asfd"
+	writeString: "asdf"
+end
 begin
 	writeString: "oy m8"
 	writeString: "dfg"
 	if myballs > 2:
 	begin
 		writeString: "shieet mane"
+		loop:
+		begin
+			x:=x+2
+			continue
+			(*igno(*###re many
+			line comme@nts*)
+			nested*)
+		end
 	end
 	writeString: "ayy"
 end

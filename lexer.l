@@ -35,6 +35,7 @@ int tab_start = 0;
 int flag = 1;
 int no_of_begins = 0;
 int no_of_ends = 0;
+int case_id = 0;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -180,7 +181,15 @@ var                                                             { return T_var; 
 
 "(*"															{ nesting = 1; BEGIN(COMMENT);}
 <COMMENT>"(*" 													{ nesting++; }
-<COMMENT>"*)"		  				               	            { nesting--; if ( nesting == 0 ) BEGIN(INITIAL); }
+<COMMENT>"*)"		  				               	            { nesting--; 
+																  if ( nesting == 0 ) {
+																  	if (case_id == 0)
+																  	  BEGIN(BEGEND); 
+																  	else
+																  	  BEGIN(INDENT);
+																  }
+																}
+
 <COMMENT>"\n"													{ number_of_lines++; }
 <COMMENT><<EOF>>    											{ yyerror( "EOF encountered inside comment" ); }
 <COMMENT>"*"													{ /*nothing*/ }
@@ -326,11 +335,13 @@ void yyerror ( const char *msg ) {
 
 void begin_default_mode() {
 	printf("> Default\n");
+	case_id = 0;
 	BEGIN(BEGEND);
 }
 
 void begin_indent_mode() {
 	printf("> Indent\n");
+	case_id = 1;
 	BEGIN(INDENT);
 }
 
