@@ -1,7 +1,9 @@
-.PHONY: clean distclean default
+.PHONY: clean distclean install uninstall default
 
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall --coverage
+BINPATH = /usr/local/bin/dana
+PREFIX = /usr/local/bin/
 
 default: dana
 
@@ -17,6 +19,23 @@ parser.o: parser.c
 
 dana: lexer.o parser.o
 	$(CC) $(CFLAGS) -o dana $^ -lfl
+
+install: dana
+ifeq ($(wildcard $(BINPATH)),)
+	@install ./dana $(PREFIX)dana
+	@echo "Dana installed successfully!"
+else
+	@echo "Dana is already installed in your system!"
+endif
+
+uninstall: dana
+ifeq ($(wildcard $(BINPATH)),)
+	@echo "Dana is not installed in your system!"`1
+else
+	@rm $(PREFIX)dana
+	@echo "Dana uninstalled successfully!"
+endif
+
 
 clean:
 	$(RM) lexer.c parser.c parser.h parser.output *.o *~
