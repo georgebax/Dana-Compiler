@@ -1,0 +1,10 @@
+.DS_Store
+*.o
+*.swp
+*.gcno
+*.gcda
+*.gcov
+*.output
+lexer.c
+lex.yy.c
+dana
