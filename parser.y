@@ -61,8 +61,8 @@ extern int number_of_lines;
 %left '*' '/' '%' '&'
 %nonassoc '=' "<>" '<' '>' "<=" ">="
 %nonassoc "not"
-%left "and"
 %left "or"
+%left "and"
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -237,17 +237,21 @@ expr
 ;
 
 cond
-:	'(' cond ')' 
-|	expr
+:	expr
+| 	x-cond
+;
+
+x-cond
+:	'(' x-cond ')' 
 |	T_not cond 
 |	cond T_and cond 
 |	cond T_or  cond 
-|	expr '=' expr 
-|	expr T_not_equal expr 
-|	expr '<' expr 
-|	expr '>' expr 
-|	expr T_greater_equal expr 
-|	expr T_less_equal expr
+|	cond '=' cond 
+|	cond T_not_equal cond 
+|	cond '<' cond 
+|	cond '>' cond 
+|	cond T_greater_equal cond 
+|	cond T_less_equal cond
 ;	
 
 

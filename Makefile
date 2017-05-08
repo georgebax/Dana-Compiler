@@ -1,7 +1,7 @@
 .PHONY: clean distclean install uninstall default
 
 CC=gcc
-CFLAGS=-Wall --coverage
+CFLAGS=-Wall 
 BINPATH = /usr/local/bin/dana
 PREFIX = /usr/local/bin/
 
