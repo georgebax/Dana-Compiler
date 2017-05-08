@@ -55,14 +55,14 @@ extern int number_of_lines;
 
 %token T_ind_def
 
-%nonassoc '!'
-%left UMINUS UPLUS
-%left '+' '-' '|'
-%left '*' '/' '%' '&'
-%nonassoc '=' "<>" '<' '>' "<=" ">="
-%nonassoc "not"
 %left "or"
 %left "and"
+%nonassoc "not"
+%nonassoc '=' "<>" '<' '>' "<=" ">="
+%left '+' '-' '|'
+%left '*' '/' '%' '&'
+%nonassoc '!'
+%left UMINUS UPLUS
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
