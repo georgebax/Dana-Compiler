@@ -1,15 +1,14 @@
 %{
 
-/*------------------------------------------To-do--------------------------------------------------------------------------------------------------------------------------
-fix many line comments.We don't need to return anything!!!!
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+#define true 1
+#define false 0
 
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
+#include "lexer.h"
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -18,6 +17,10 @@ fix many line comments.We don't need to return anything!!!!
 /*----------------------------------------Function Declarations----------------------------------------------------------------------------------------------------------*/
 int count_tabs(char *txt );
 void yyerror (const char *msg);
+void begin_indent_mode();
+void begin_default_mode();
+int check_def_case();
+int check_var_case();
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -30,6 +33,9 @@ char hex_num[3];
 int tabs = 0;
 int tab_start = 0;
 int flag = 1;
+int no_of_begins = 0;
+int no_of_ends = 0;
+int case_id = 0;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -47,100 +53,143 @@ W [ ]
 T [\t]
 
 %x COMMENT
-
+%s BEGEND
+%s INDENT
 
 %%
 
-begin 															{ flag = 0; return T_begin; }
+<BEGEND>"begin"													{ no_of_begins++; return T_begin; }
 
-end 															{ flag = 0; return T_end; }
+<BEGEND>"end"													{ no_of_ends++; return T_end; }
 
-and                                                             { flag = 0; return T_and; }
+<INDENT>"begin"													{ yyerror( "\"Begin\" keyword not supported in this mode!" ); }
 
-as                                                             	{ flag = 0; return T_as; }
+<INDENT>"end"													{ yyerror( "\"End\" keyword not supported in this mode!" ); }
 
-break                                                           { flag = 0; return T_break; }
+and                                                             { return T_and; }
 
-def																{ flag = 0; return T_def; }
+as                                                             	{ return T_as; }
 
-byte                                                            { flag = 0; return T_byte; }
+break                                                           { return T_break; }
 
-continue                                                        { flag = 0; return T_continue; }
+def																{ return T_def; }
 
-decl                                                            { flag = 0; return T_decl; }
+byte                                                            { return T_byte; }
 
-elif                                                            { flag = 0; return T_elif; }
+continue                                                        { return T_continue; }
 
-else                                                            { flag = 0; return T_else; }
+decl                                                            { return T_decl; }
 
-exit                                                            { flag = 0; return T_exit; }
+elif                                                            { return T_elif; }
 
-false															{ flag = 0; return T_false; }
+else                                                            { return T_else; }
 
-if                                                              { flag = 0; return T_if; }
+exit                                                            { return T_exit; }
 
-is                                                              { flag = 0; return T_is; }
+false															{ return T_false; }
 
-int                                                             { flag = 0; return T_int; }
+if                                                              { return T_if; }
 
-loop                                                            { flag = 0; return T_loop; }
+is                                                              { return T_is; }
 
-not                                                             { flag = 0; return T_not; }
+int                                                             { return T_int; }
 
-or                                                              { flag = 0; return T_or; }
+loop                                                            { return T_loop; }
 
-ref                                                             { flag = 0; return T_ref; }
+not                                                             { return T_not; }
 
-return                                                          { flag = 0; return T_return; }
+or                                                              { return T_or; }
 
-skip                                                            { flag = 0; return T_skip; }
+ref                                                             { return T_ref; }
 
-true                                                            { flag = 0; return T_true; }
+return                                                          { return T_return; }
 
-var                                                             { flag = 0; return T_var; }
+skip                                                            { return T_skip; }
 
-{D}+								 							{ flag = 0; return T_const; }
+true                                                            { return T_true; }
 
-{L}({L}|{D}|"_")*												{ flag = 0; return T_id; }
+var                                                             { return T_var; }
 
-\n{T}+															{ number_of_lines++;
+{D}+								 							{ return T_const; }
+
+{L}({L}|{D}|"_")*												{ return T_id; }
+
+<INDENT>\n{T}+"#".*					                        	{ puts("ayy"); number_of_lines++; /*this fixes the error when a comment line starts with tabs*/}
+
+<INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
-																  tabs = tabs-tab_start; 
-																  printf("tabs = %d\n", tabs);
-																  printf("indentation_depth = %d\n", indentation_depth);
+																  //printf("tabs = %d in line %d\n", tabs, number_of_lines);
+																  //printf("previous indentation_depth = %d\n", indentation_depth);
 																  if ( tabs > indentation_depth ) { 
-																  	printf("begin\n");
 																  	indentation_depth = tabs;
-																  	return T_begin; }
-																  if ( tabs < indentation_depth ) {
-																  	printf("end\n");
-																  	indentation_depth = tabs;
-																  	return T_end; }
+																    //printf("new indentation_depth = %d\n", indentation_depth);
+																  	if (check_def_case()) {
+																  		puts(">>> ind def");
+																  		return T_ind_def;
+																  	}
+																  	if (check_var_case()) {
+																  		puts(">>> ind var");
+																  	}
+																  	else {
+																	  	no_of_begins++;
+																	  	printf("> Returning begin, @ %d\n", number_of_lines);
+																	  	printf(">> no_of_begins = %d\n", no_of_begins);
+																	  	return T_begin; 
+																  	}
 																  }
+																  if ( tabs < indentation_depth ) {
+																  	//printf("end\n");
+																  	indentation_depth = tabs;
+																  	//printf("new indentation_depth = %d\n", indentation_depth);
+																  	no_of_ends++;
+																  	printf("> Returning end,   @ %d\n", number_of_lines);
+																  	printf(">> no_of_ends = %d\n", no_of_ends);
+																  	return T_end; 
+																  }
+																  //printf("> No indent action taken!\n");
+																}
 
 
-{T}+															{ if ( number_of_lines == 1 && flag == 1) { tab_start = count_tabs( yytext ); } }                                                                  
+<INDENT><<EOF>>													{ printf("Encountered EOF\n");
+																  if ( no_of_begins > no_of_ends ) {
+																  	no_of_ends++;
+																  	printf("> Returning end,   @ %d\n", number_of_lines);
+																  	return T_end;
+																  }
+  																  printf("> Returning EOF!\n");
+																  return T_eof;
+																}															
+
+<BEGEND>\n{T}+													{ number_of_lines++; }
 
 
-\'{HEN}\'														{ flag = 0; return T_hex; }
+\'{HEN}\'														{ return T_hex; }
 
 
-\'{ESC}\'														{ flag = 0; return T_escape; }
+\'{ESC}\'														{ return T_escape; }
 
 
-\'({C})\' 														{ flag = 0; return T_char_const; }
+\'({C})\' 														{ return T_char_const; }
 
 
-\"({QC}|{SC})*\"												{ flag = 0; return T_string; }
+\"({QC}|{SC})*\"												{ return T_string; }
 
 
 "#".*						                        			{ number_of_lines++; }
 
 
 
-"(*"															{ nesting = 1; BEGIN( COMMENT );}
+"(*"															{ nesting = 1; BEGIN(COMMENT);}
 <COMMENT>"(*" 													{ nesting++; }
-<COMMENT>"*)"		  				               	            { nesting--; if ( nesting == 0 ) BEGIN( INITIAL ); }
+<COMMENT>"*)"		  				               	            { nesting--; 
+																  if ( nesting == 0 ) {
+																  	if (case_id == 0)
+																  	  BEGIN(BEGEND); 
+																  	else
+																  	  BEGIN(INDENT);
+																  }
+																}
+
 <COMMENT>"\n"													{ number_of_lines++; }
 <COMMENT><<EOF>>    											{ yyerror( "EOF encountered inside comment" ); }
 <COMMENT>"*"													{ /*nothing*/ }
@@ -150,62 +199,61 @@ var                                                             { flag = 0; retu
 \n 																{ number_of_lines++; }
 
 
-"+"																{ flag = 0; return yytext[0]; }
+"+"																{ return yytext[0]; }
 
 
-"-"																{ flag = 0; return yytext[0]; }
+"-"																{ return yytext[0]; }
 
 
-"*"																{ flag = 0; return yytext[0]; }
+"*"																{ return yytext[0]; }
 
 	
-"/" 		                            		                { flag = 0; return yytext[0]; }
+"/" 		                            		                { return yytext[0]; }
 
-"%"                                                             { flag = 0; return yytext[0]; }
+"%"                                                             { return yytext[0]; }
 
-"!"                                                             { flag = 0; return yytext[0]; }
+"!"                                                             { return yytext[0]; }
 
-"&"                                                             { flag = 0; return yytext[0]; }
+"&"                                                             { return yytext[0]; }
 
-"|"                                                             { flag = 0; return yytext[0]; }
+"|"                                                             { return yytext[0]; }
 
-"="                                                             { flag = 0; return yytext[0]; }
+"="                                                             { return yytext[0]; }
 
-"<>"                                                            { flag = 0; return T_not_equal; }	
+"<>"                                                            { return T_not_equal; }	
 
-"<"                                                             { flag = 0; return yytext[0]; }
+"<"                                                             { return yytext[0]; }
 
-">"                                                             { flag = 0; return yytext[0]; }
+">"                                                             { return yytext[0]; }
 
-"<="                                                            { flag = 0; return T_less_equal; }
+"<="                                                            { return T_less_equal; }
 
-">="                                                            { flag = 0; return T_greater_equal; }
+">="                                                            { return T_greater_equal; }
 
-"("																{ flag = 0; return yytext[0]; }
+"("																{ return yytext[0]; }
 
-")"																{ flag = 0; return yytext[0]; }
+")"																{ return yytext[0]; }
 
-"["																{ flag = 0; return yytext[0]; }
+"["																{ return yytext[0]; }
 	
-"]"																{ flag = 0; return yytext[0]; }
+"]"																{ return yytext[0]; }
 
-","																{ flag = 0; return yytext[0]; }
+","																{ return yytext[0]; }
 
-":"																{ flag = 0; return yytext[0]; }
+":"																{ return yytext[0]; }
 
-":="															{ flag = 0; return T_assign; }
+":="															{ return T_assign; }
 
 {W}|{T}															/* do nothing! */ 
 
 
-.																{ flag = 0; number_of_errors++; 
+.																{ number_of_errors++; 
 																  yyerror( "illegal character" ); }
 
 
 %%
 
-int count_tabs( char *txt )
-{
+int count_tabs( char *txt ) {
 	int i;
 	int num_of_tabs = 0;
 	for ( i = 0; i <= strlen(txt); i++ )
@@ -213,3 +261,121 @@ int count_tabs( char *txt )
 			num_of_tabs++;
 	return num_of_tabs;
 }
+
+int check_def_case() {
+	char c;
+	if ( ((c = input()) == EOF) || (c != 'd') ) {
+		unput('d');
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'e') ) {
+		unput('e'); // unput from finish to start!
+		unput('d'); 
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'f') ) {
+		unput('f'); // unput from finish to start!		
+		unput('e'); 
+		unput('d'); 
+		return false;
+	}
+	unput('f'); // unput from finish to start!		
+	unput('e'); 
+	unput('d'); 
+	return true;
+}
+
+int check_var_case() {
+	char c;
+	if ( ((c = input()) == EOF) || (c != 'v') ) {
+		unput('v');
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'a') ) {
+		unput('a'); // unput from finish to start!
+		unput('v'); 
+		return false;
+	}
+	if ( ((c = input()) == EOF) || (c != 'r') ) {
+		unput('r'); // unput from finish to start!		
+		unput('a'); 
+		unput('v'); 
+		return false;
+	}
+	unput('r'); // unput from finish to start!		
+	unput('a'); 
+	unput('v'); 
+	return true;
+}
+
+void usageInformation() {
+	    fprintf(stderr,
+        "\n  Usage"
+        "\n    $ dana [option] [input file]"
+        "\n"
+        "\n  Options"
+        "\n    --indents, -i\tCompile using indentation instead of begin-end keywords"
+        "\n    --help, -h   \tDisplay help message"
+        "\n"
+    );
+    exit(1);
+}
+
+void fatal(char *msg) {
+	fprintf(stderr, "%s\n", msg);
+	exit(2);
+}
+
+void yyerror ( const char *msg ) {
+	fprintf( stderr, "DANA ERROR: %s\n" , msg );
+ 	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
+  	exit( 1 );
+}
+
+
+void begin_default_mode() {
+	printf("> Default\n");
+	case_id = 0;
+	BEGIN(BEGEND);
+}
+
+void begin_indent_mode() {
+	printf("> Indent\n");
+	case_id = 1;
+	BEGIN(INDENT);
+}
+
+/*
+int main(int argc, char *argv[]) {
+
+    FILE *fp;
+
+    if (argc == 1) fatal("Too few arguments! Type dana --help,-h for usage information");
+
+    if (strcmp(argv[1],"-i") == 0 || strcmp(argv[1],"--indents") == 0) {
+        printf(">> Indentation mode\n");
+		yyin = fopen(argv[2], "r"); //Open file and redirect yylex to it
+		if (yyin == NULL) fatal("File not found");
+        fp = fopen(argv[2], "r");
+        yyrestart(fp); 
+        BEGIN(INDENT);
+    }
+    else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0) {
+        usageInformation();
+    }
+    else { // DEFAULT (BEGIN-END)
+        printf(">> Default mode\n");
+        fp = fopen(argv[1], "r");
+        yyrestart(fp);
+        BEGIN(BEGEND);
+    }
+
+    int token;
+
+    do {
+        token = yylex();
+        printf("@ line:%d \t token=%d \t lexeme=\"%s\"\n", number_of_lines, token, yytext);
+    } while (token != T_eof);
+    return 0;
+}
+*/

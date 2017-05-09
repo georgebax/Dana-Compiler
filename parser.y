@@ -1,9 +1,11 @@
 %{
 
+
 /*----------------------------------------Libraries----------------------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lexer.h"
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -51,209 +53,238 @@ extern int number_of_lines;
 %token T_escape
 %token T_hex
 
+%token T_ind_def
 
-%nonassoc '!'
-%left UMINUS UPLUS
+%left "or"
+%left "and"
+%nonassoc "not"
+%nonassoc '=' "<>" '<' '>' "<=" ">="
 %left '+' '-' '|'
 %left '*' '/' '%' '&'
-%nonassoc '=' "<>" '<' '>' "<=" ">="
-%nonassoc "not"
-%left "and"
-%left "or"
+%nonassoc '!'
+%left UMINUS UPLUS
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %%
 
-program:
-	func_def
+program
+:	func_def
 ;
 
-func_def:
-	T_def header local_def_star block
+func_def
+:	T_def header T_ind_def_req local_def_star block
 ;
 
-local_def_star:
-	local_def local_def_star |
-	/*nothing*/ 
+T_ind_def_req
+:	T_ind_def
+|	/*nothing*/
 ;
 
-header:
-	T_id is_data_type_req fparameters_req
+local_def_star
+:	local_def local_def_star
+|	/*nothing*/ 
 ;
 
-is_data_type_req: /*at most 1*/
-	T_is data_type |
-	/*nothing*/
+header
+:	T_id is_data_type_req fparameters_req
 ;
 
-fparameters_req:
-	':' fpar_def comma_fpar_def_star |
-	/*nothing*/ 
+is_data_type_req /*at most 1*/
+:	T_is data_type
+|	/*nothing*/
 ;
 
-comma_fpar_def_star:
-	',' fpar_def comma_fpar_def_star |
-	/*nothing*/
+fparameters_req
+:	':' fpar_def comma_fpar_def_star
+|	/*nothing*/ 
 ;
 
-fpar_def:
-	id_plus T_as fpar_type
+comma_fpar_def_star
+:	',' fpar_def comma_fpar_def_star
+|	/*nothing*/
 ;
 
-id_plus: /*(id)+*/
-	T_id /*and then nothing*/ |
-	T_id id_plus
+fpar_def
+:	id_plus T_as fpar_type
 ;
 
-data_type:
-	T_int | 
-	T_byte
+id_plus /*(id)+*/
+:	T_id /*and then nothing*/
+|	T_id id_plus
 ;
 
-type: /*INT_CONST NEEDS ATTENTION!*/
-	data_type brackets_int_const_star
+data_type
+:	T_int
+|	T_byte
 ;
 
-fpar_type:
-	type | 
-	T_ref data_type | 
-	data_type '[' ']' brackets_int_const_star
+type /*INT_CONST NEEDS ATTENTION!*/
+:	data_type brackets_int_const_star
 ;
 
-brackets_int_const_star:
-	'[' T_const ']' brackets_int_const_star |
-	/*nothing*/
+fpar_type
+:	type
+|	T_ref data_type 
+|	data_type '[' ']' brackets_int_const_star
 ;
 
-local_def:
-	func_def | 
-	func_decl | 
-	var_def
+brackets_int_const_star
+:	'[' T_const ']' brackets_int_const_star
+|	/*nothing*/
 ;
 
-func_decl: 
-	"decl" header
+local_def
+:	func_def
+|	func_decl
+|	var_def
 ;
 
-var_def:
-	"var" id_plus "is" type
-
-stmt:
-	T_skip | 
-	l_value T_assign expr | 
-	proc_call | 
-	T_exit | 
-	T_return ':' expr | 
-	T_if cond ':' block elif_and_block_star else_and_block_req |	
-	T_loop id_req ':' block |
-	T_break colon_id_req |
-	T_continue colon_id_req
+func_decl
+:	"decl" header
 ;
 
-id_req:
-	/*nothing*/ |
-	T_id
+var_def
+:	"var" id_plus "is" type
 ;
 
-colon_id_req:
-	':' T_id |
-	/*nothing*/
+stmt
+:	T_skip 
+|	l_value T_assign expr 
+|	proc_call 
+|	T_exit 
+|	T_return ':' expr 
+|	T_if cond ':' block elif_and_block_star else_and_block_req 
+|	T_loop id_req ':' block 
+|	T_break colon_id_req 
+|	T_continue colon_id_req
 ;
 
-elif_and_block_star:
-	T_elif cond ':' block elif_and_block_star |
-	/*nothing*/
+id_req
+:	/*nothing*/
+|	T_id
+;
+
+colon_id_req
+:	':' T_id
+|	/*nothing*/
+;
+
+elif_and_block_star
+:	T_elif cond ':' block elif_and_block_star
+|	/*nothing*/
 ;	
 
-else_and_block_req:
-	T_else ':' block |
-	/*nothing*/
+else_and_block_req
+:	T_else ':' block
+|	/*nothing*/
 ;
 
-block:
-	T_begin stmt_plus T_end /*| 
-	stmt_plus // CHECK THAT!!! it had an auto-end*/
+block
+:	T_begin stmt_plus T_end
 ;
 
-stmt_plus:
-	stmt stmt_plus | /*EXPERIMENTAL*/
-	stmt /*and then nothing*/
+stmt_plus
+:	stmt stmt_plus /*EXPERIMENTAL*/
+|	stmt /*and then nothing*/
 ;
 
-proc_call:
-	T_id colon_expr_req
+proc_call
+:	T_id colon_expr_req
 ;
 
-colon_expr_req:
-	/*nothing*/ |
-	':' expr comma_expr_star
-
-func_call:
-	T_id '(' expr_comma_expr_req ')'
+colon_expr_req
+:	/*nothing*/ 
+|	':' expr comma_expr_star
 ;
 
-expr_comma_expr_req:
-	/*nothing*/ |
-	expr comma_expr_star
+func_call
+:	T_id '(' expr_comma_expr_req ')'
 ;
 
-comma_expr_star:
-	/*nothing*/ |
-	',' expr comma_expr_star
+expr_comma_expr_req
+:	/*nothing*/ 
+|	expr comma_expr_star
 ;
 
-l_value:
-	T_id | T_string | l_value '[' expr ']'
+comma_expr_star
+:	/*nothing*/ 
+|	',' expr comma_expr_star
 ;
 
-expr:
-	T_const |
-	T_char_const | 
-	l_value | 
-	'(' expr ')' | 
-	func_call |
-	'+' expr | 
-	'-' expr | 
-	expr '+' expr |
-	expr '-' expr | 
-	expr '*' expr | 
-	expr '/' expr | 
-	expr '%' expr |
-	T_true | T_false |
-	'!' expr | 
-	expr '&' expr |
-	expr '|' expr
+l_value
+:	T_id | T_string | l_value '[' expr ']'
 ;
 
-cond:
-	'(' cond ')' |
-	expr |
-	T_not cond |
-	cond T_and cond |
-	cond T_or  cond |
-	expr '=' expr |
-	expr T_not_equal expr |
-	expr '<' expr |
-	expr '>' expr |
-	expr T_greater_equal expr |
-	expr T_less_equal expr
+expr
+:	T_const 
+|	T_char_const 
+|	l_value 
+|	'(' expr ')' 
+|	func_call
+|	'+' expr  
+|	'-' expr 
+|	expr '+' expr 
+|	expr '-' expr  
+|	expr '*' expr  
+|	expr '/' expr  
+|	expr '%' expr 
+|	T_true | T_false
+|	'!' expr 
+|	expr '&' expr 
+|	expr '|' expr
+;
+
+cond
+:	expr
+| 	x-cond
+;
+
+x-cond
+:	'(' x-cond ')' 
+|	T_not cond 
+|	cond T_and cond 
+|	cond T_or  cond 
+|	cond '=' cond 
+|	cond T_not_equal cond 
+|	cond '<' cond 
+|	cond '>' cond 
+|	cond T_greater_equal cond 
+|	cond T_less_equal cond
 ;	
+
 
 %%
 
 
-void yyerror ( const char *msg ) {
-  fprintf( stderr, "DANA ERROR: %s\n" , msg );
-  fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
-  exit( 1 );
-}
+int main(int argc, char *argv[]) {
+	FILE *fp;
 
+	if (argc == 1) fatal("Too few arguments! Type dana --help,-h for usage information");
 
-int main() {
-  if ( yyparse() ) return 1;
-  printf( "COMPILATION SUCCESSFULL!!\n" );
-  printf( "Total number of lines : %d\n" , number_of_lines );
-  return 0;
+	if (strcmp(argv[1],"-i") == 0 || strcmp(argv[1],"--indents") == 0) {
+		//yyin = fopen(filename, "r"); //Open file and redirect yylex to it
+	    fp = fopen(argv[2], "r");
+		if (fp == NULL) fatal("File not found");
+		printf("> Indent mode\n");
+	    yyrestart(fp); 
+	    begin_indent_mode();
+	    // BEGIN(INDENT);
+	}
+	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0)
+	    usageInformation();
+	else { // DEFAULT (BEGIN-END)
+	    fp = fopen(argv[1], "r");
+	    printf("> Default mode\n");
+	    yyrestart(fp);
+	    begin_default_mode();
+	    // BEGIN(BEGINEND);
+    }
+
+  	if ( yyparse() ) return 1;
+
+	printf( "COMPILATION SUCCESSFULL!!\n" );
+	printf( "Total number of lines : %d\n" , number_of_lines );
+	return 0;
 }
