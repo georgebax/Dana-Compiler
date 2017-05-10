@@ -118,65 +118,66 @@ var                                                             { return T_var; 
 
 {L}({L}|{D}|"_")*												{ return T_id; }
 
-<INDENT>\n{T}+"#".*					                        	{ puts("ayy"); number_of_lines++; /*this fixes the error when a comment line starts with tabs*/}
+<INDENT>\n{T}+"#".*					                        	{ number_of_lines++; /*this fixes the error when a comment line starts with tabs*/}
 
 <INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
 																  printf(">>>> indentation_depth = %d\n", indentation_depth);
-																  printf(">>>> tabs = %d\n", tabs);
+																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
 														          if ( tabs <= def_depth && end_returned ) {
-														          	indentation_depth = tabs;
+																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
+  																    indentation_depth = tabs;
 																  	no_of_begins++;
-																  	printf("> Returning begin, @ %d\n", number_of_lines);
+																  	printf("> Returning begin due to mad case, @ %d\n", number_of_lines);
 																  	printf(">> no_of_begins = %d\n", no_of_begins);
-																  	end_returned = false;
+																  	end_returned = false; // mark that we will need to return an end to that begin
 																  	return T_begin; 														          	
 														          }
-																  //printf("tabs = %d in line %d\n", tabs, number_of_lines);
-																  //printf("previous indentation_depth = %d\n", indentation_depth);
 																  if ( tabs > indentation_depth ) { 
 																  	indentation_depth = tabs;
-																    printf("new indentation_depth = %d\n", indentation_depth);
 																  	if (check_def_case()) {
-																  		puts(">>> ind def");
-																  		def_depth = tabs;
-																  		printf("> def depth set to %d\n", def_depth);
-																  		return T_ind_def;
+																  	  puts(">>> Nested def found!");
+																  	  def_depth = tabs;
+																  	  printf("> def depth now set to %d\n", def_depth);
+																  	  return T_ind_def;
 																  	}
-																  	if (check_var_case()) {
-																  		puts(">>> ind var");
+																  	else if (check_var_case()) {
+																  	  puts(">>> ind var");
 																  	}
 																  	else {
-																	  	no_of_begins++;
-																	  	printf("> Returning begin, @ %d\n", number_of_lines);
-																	  	printf(">> no_of_begins = %d\n", no_of_begins);
-																	  	return T_begin; 
+																	  no_of_begins++;
+																	  printf("> Returning begin, @ %d\n", number_of_lines);
+																	  printf(">> no_of_begins = %d\n", no_of_begins);
+																	  return T_begin; 
 																  	}
 																  }
-																  if ( tabs == indentation_depth ) {
-																  	printf("equal\n" );
-																  }
-																  if ( tabs < indentation_depth ) {
+																  else if ( tabs < indentation_depth ) {
 																  	//printf("end\n");
-																  	printf("new indentation_depth = %d\n", indentation_depth);
+																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
   																    indentation_depth = tabs;
 																  	no_of_ends++;
 																  	printf("> Returning end,   @ %d\n", number_of_lines);
 																  	printf(">> no_of_ends = %d\n", no_of_ends);
 
 																  	if ( tabs <= def_depth ) {
-																		printf("in new case\n");
-																		printf("unputting %d tabs\n", tabs);
-																		for ( i = 0; i <= tabs-1; i++ )	
-																			unput('\t');
-																		unput('\n');	
-																		end_returned = true;										
-																  		return T_end;
+																	  printf("in new case\n");
+																	  printf("i = %d\n", i);
+																	  printf("tabs = %d\n", tabs);
+																	  printf("unputting %d tabs\n", tabs);
+																	  for ( i = 0; i < tabs; i++ ) {
+																	  	printf("unputting tab\n");
+																	  	unput('\t');
+																	  }
+																	  printf("unputting newline\n");
+																	  unput('\n');	
+																	  end_returned = true;										
+																  	  return T_end;
 																  	}	 
 																  }
-																  end_returned = true;
-																  return T_end;
-																  //printf("> No indent action taken!\n");
+																  else {  // tabs == indentation_depth  
+																    end_returned = true;
+																    printf("> No indent action taken!\n");
+																  }
 																}
 
 
@@ -338,19 +339,6 @@ int check_var_case() {
 	return true;
 }
 
-void usageInformation() {
-	    fprintf(stderr,
-        "\n  Usage"
-        "\n    $ dana [option] [input file]"
-        "\n"
-        "\n  Options"
-        "\n    --indents, -i\tCompile using indentation instead of begin-end keywords"
-        "\n    --help, -h   \tDisplay help message"
-        "\n"
-    );
-    exit(1);
-}
-
 void fatal(char *msg) {
 	fprintf(stderr, "%s\n", msg);
 	exit(2);
@@ -361,7 +349,6 @@ void yyerror ( const char *msg ) {
  	fprintf( stderr, "ERROR FOUND IN LINE %d...\n" , number_of_lines );
   	exit( 1 );
 }
-
 
 void begin_default_mode() {
 	case_id = 0;

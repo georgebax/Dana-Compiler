@@ -1,2 +1,4 @@
 def hello
-	writeString: "Hello world!\n"
+	def hi
+		a := 2
+	writeString: "Hi!"

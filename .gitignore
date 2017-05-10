@@ -5,6 +5,8 @@
 *.gcda
 *.gcov
 *.output
+parser.h
+parser.c
 lexer.c
 lex.yy.c
 dana

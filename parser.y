@@ -10,8 +10,9 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-void yyerror ( const char *msg );
+void yyerror(const char *msg);
 extern int number_of_lines;
+void fatal(char *msg);
 
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
 
@@ -91,7 +92,7 @@ header
 :	T_id is_data_type_req fparameters_req
 ;
 
-is_data_type_req /*at most 1*/
+is_data_type_req 
 :	T_is data_type
 |	/*nothing*/
 ;
@@ -256,6 +257,19 @@ x-cond
 
 
 %%
+
+void usageInformation() {
+	    fprintf(stderr,
+        "\n  Usage"
+        "\n    $ dana [option] [input file]"
+        "\n"
+        "\n  Options"
+        "\n    --indents, -i\tCompile using indentation instead of begin-end keywords"
+        "\n    --help, -h   \tDisplay help message"
+        "\n"
+    );
+    exit(1);
+}
 
 
 int main(int argc, char *argv[]) {
