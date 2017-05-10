@@ -36,6 +36,10 @@ int flag = 1;
 int no_of_begins = 0;
 int no_of_ends = 0;
 int case_id = 0;
+int def_depth = 0;
+int i;
+
+int end_returned = false;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -118,13 +122,25 @@ var                                                             { return T_var; 
 
 <INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
+																  printf(">>>> indentation_depth = %d\n", indentation_depth);
+																  printf(">>>> tabs = %d\n", tabs);
+														          if ( tabs <= def_depth && end_returned ) {
+														          	indentation_depth = tabs;
+																  	no_of_begins++;
+																  	printf("> Returning begin, @ %d\n", number_of_lines);
+																  	printf(">> no_of_begins = %d\n", no_of_begins);
+																  	end_returned = false;
+																  	return T_begin; 														          	
+														          }
 																  //printf("tabs = %d in line %d\n", tabs, number_of_lines);
 																  //printf("previous indentation_depth = %d\n", indentation_depth);
 																  if ( tabs > indentation_depth ) { 
 																  	indentation_depth = tabs;
-																    //printf("new indentation_depth = %d\n", indentation_depth);
+																    printf("new indentation_depth = %d\n", indentation_depth);
 																  	if (check_def_case()) {
 																  		puts(">>> ind def");
+																  		def_depth = tabs;
+																  		printf("> def depth set to %d\n", def_depth);
 																  		return T_ind_def;
 																  	}
 																  	if (check_var_case()) {
@@ -137,15 +153,29 @@ var                                                             { return T_var; 
 																	  	return T_begin; 
 																  	}
 																  }
+																  if ( tabs == indentation_depth ) {
+																  	printf("equal\n" );
+																  }
 																  if ( tabs < indentation_depth ) {
 																  	//printf("end\n");
-																  	indentation_depth = tabs;
-																  	//printf("new indentation_depth = %d\n", indentation_depth);
+																  	printf("new indentation_depth = %d\n", indentation_depth);
+  																    indentation_depth = tabs;
 																  	no_of_ends++;
 																  	printf("> Returning end,   @ %d\n", number_of_lines);
 																  	printf(">> no_of_ends = %d\n", no_of_ends);
-																  	return T_end; 
+
+																  	if ( tabs <= def_depth ) {
+																		printf("in new case\n");
+																		printf("unputting %d tabs\n", tabs);
+																		for ( i = 0; i <= tabs-1; i++ )	
+																			unput('\t');
+																		unput('\n');	
+																		end_returned = true;										
+																  		return T_end;
+																  	}	 
 																  }
+																  end_returned = true;
+																  return T_end;
 																  //printf("> No indent action taken!\n");
 																}
 
@@ -334,13 +364,11 @@ void yyerror ( const char *msg ) {
 
 
 void begin_default_mode() {
-	printf("> Default\n");
 	case_id = 0;
 	BEGIN(BEGEND);
 }
 
 void begin_indent_mode() {
-	printf("> Indent\n");
 	case_id = 1;
 	BEGIN(INDENT);
 }
