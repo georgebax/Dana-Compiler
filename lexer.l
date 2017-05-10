@@ -131,6 +131,7 @@ var                                                             { return T_var; 
 																  	number_of_lines--; // because the newline will be parsed twice ;)
 																  	printf("> Returning begin due to mad case, @ %d\n", number_of_lines);
 																  	printf(">> no_of_begins = %d\n", no_of_begins);
+																  	def_depth--; // this PROBABLY does the job ;)
 																  	end_returned = false; // mark that we will need to return an end to that begin
 																  	return T_begin; 														          	
 														          }

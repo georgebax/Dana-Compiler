@@ -298,7 +298,7 @@ int main(int argc, char *argv[]) {
 
   	if ( yyparse() ) return 1;
 
-	printf( "COMPILATION SUCCESSFULL!!\n" );
+	printf( "COMPILATION SUCCESSFUL!!\n" );
 	printf( "Total number of lines : %d\n" , number_of_lines );
 	return 0;
 }

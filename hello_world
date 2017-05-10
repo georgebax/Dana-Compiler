@@ -1,8 +1,13 @@
 def hello
-	writeString: "sd"
-	a := 2
+	def hi 
+		writeString: "sd"
+		a := 2
+		a := 2
+		a := 2
 	a := 1
-	if a = 1
+	a := 1
+	if true:
 		writeString: "sd"
 		writeString: "sd"
+	a := 1
 	a := 1
