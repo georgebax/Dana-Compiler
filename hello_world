@@ -1,4 +1,8 @@
 def hello
-	def hi
-		a := 2
-	writeString: "Hi!"
+	writeString: "sd"
+	a := 2
+	a := 1
+	if a = 1
+		writeString: "sd"
+		writeString: "sd"
+	a := 1

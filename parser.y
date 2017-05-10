@@ -183,7 +183,7 @@ else_and_block_req
 ;
 
 block
-:	T_begin stmt_plus T_end
+:	T_begin stmt_plus T_end 
 ;
 
 stmt_plus

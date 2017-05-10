@@ -128,6 +128,7 @@ var                                                             { return T_var; 
 																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
   																    indentation_depth = tabs;
 																  	no_of_begins++;
+																  	number_of_lines--; // because the newline will be parsed twice ;)
 																  	printf("> Returning begin due to mad case, @ %d\n", number_of_lines);
 																  	printf(">> no_of_begins = %d\n", no_of_begins);
 																  	end_returned = false; // mark that we will need to return an end to that begin
@@ -144,9 +145,9 @@ var                                                             { return T_var; 
 																  	else if (check_var_case()) {
 																  	  puts(">>> ind var");
 																  	}
-																  	else {
+																  	else { // normal case, at this point we are in a block!
 																	  no_of_begins++;
-																	  printf("> Returning begin, @ %d\n", number_of_lines);
+																	  printf("> Returning (normal) begin, @ %d\n", number_of_lines);
 																	  printf(">> no_of_begins = %d\n", no_of_begins);
 																	  return T_begin; 
 																  	}
@@ -161,21 +162,16 @@ var                                                             { return T_var; 
 
 																  	if ( tabs <= def_depth ) {
 																	  printf("in new case\n");
-																	  printf("i = %d\n", i);
-																	  printf("tabs = %d\n", tabs);
 																	  printf("unputting %d tabs\n", tabs);
-																	  for ( i = 0; i < tabs; i++ ) {
-																	  	printf("unputting tab\n");
+																	  for ( i = 0; i < tabs; i++ ) 
 																	  	unput('\t');
-																	  }
-																	  printf("unputting newline\n");
 																	  unput('\n');	
 																	  end_returned = true;										
 																  	  return T_end;
 																  	}	 
 																  }
 																  else {  // tabs == indentation_depth  
-																    end_returned = true;
+																    end_returned = false;
 																    printf("> No indent action taken!\n");
 																  }
 																}
