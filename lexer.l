@@ -120,12 +120,13 @@ var                                                             { return T_var; 
 
 <INDENT>\n{T}+"#".*					                        	{ number_of_lines++; /*this fixes the error when a comment line starts with tabs*/}
 
+<INDENT>\n{T}+"(*"												{ nesting = 1; BEGIN(COMMENT);}
+
 <INDENT>\n{T}+													{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
 																  printf(">>>> indentation_depth = %d\n", indentation_depth);
 																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
 														          if ( tabs <= def_depth && end_returned ) {
-																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
   																    indentation_depth = tabs;
 																  	no_of_begins++;
 																  	number_of_lines--; // because the newline will be parsed twice ;)
@@ -157,7 +158,6 @@ var                                                             { return T_var; 
 																  	//printf("end\n");
 																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
   																    indentation_depth = tabs;
-																  	no_of_ends++;
 																  	printf("> Returning end,   @ %d\n", number_of_lines);
 																  	printf(">> no_of_ends = %d\n", no_of_ends);
 
@@ -168,6 +168,7 @@ var                                                             { return T_var; 
 																	  	unput('\t');
 																	  unput('\n');	
 																	  end_returned = true;										
+  																  	  no_of_ends++;
 																  	  return T_end;
 																  	}	 
 																  }

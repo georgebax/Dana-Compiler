@@ -1,0 +1,18 @@
+def move: source target as byte []
+	def ayy: bugs everywhere as int []
+		writeString: "Moving from "
+		writeString: source	
+		writeString: " to "
+		writeString: target
+		writeString: ".\n"
+		if rings >= 1:
+			hanoi: rings-1,source,auxiliary,target
+			move: source, target
+			if true:
+				writeString: "there ain't no fuckin rings"
+			hanoi: rings-1,auxiliary, targer, source
+		writeString: "Rings: "				
+		numberOfRings := readInteger()
+		hanoi: numberOfRings, "left","right","middle"
+	writeString: "fac"
+	writeString: "mane"
