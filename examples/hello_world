@@ -2,9 +2,9 @@ def hello
 	writeString: "sd"
 	writeString: "sd"
 	loop:
-		a := 1
-		a := 1
-		a := 1
+			a := 1
+			a := 1
+			a := 1
 	a := 1
 	if a>1: 
 		a := 1

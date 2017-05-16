@@ -39,6 +39,9 @@ int case_id = 0;
 int def_depth = 0;
 int i;
 
+int d[1024]; // variable size (?)
+int depth_runner = 0;
+
 int end_returned = false;
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -123,6 +126,63 @@ var                                                             { return T_var; 
 <INDENT>\n{T}+"(*"												{ nesting = 1; BEGIN(COMMENT);}
 
 <INDENT>\n{T}+													{ number_of_lines++;
+														          tabs = count_tabs( yytext ); printf("# tabs = %d\n", tabs);
+
+														          if ( depth_runner > tabs ) {
+														          	printf("$ depth_runner = %d, tabs = %d\n", depth_runner, tabs);
+														          	if ( d[depth_runner-1] == 1 ) {
+														          	  d[depth_runner-1] = 0;
+														          	  depth_runner--;
+														          	  no_of_ends++;
+														          	  printf("> END   @ %d\n", number_of_lines);
+														          	  return T_end;
+														          	}
+														          	/*else if ( d[depth_runner-1] == 0 ) {
+														          	  // d[depth_runner-1] should already be zero 
+														          	  depth_runner--;
+														          	  no_of_begins++;
+														          	  printf("> BEGIN @ %d\n", number_of_lines);
+														          	  return T_begin;
+														          	} */// we MAY need more cases, that's why it wasn't an "else" ;)
+														          }
+
+														          // should enter the next lines ONLY if the depth_runner
+														          // meets the new indentation depth, which is: tabs
+
+																  if ( tabs > indentation_depth ) { 
+																  	indentation_depth = tabs;
+																  	depth_runner = tabs;
+																  	if (check_def_case()) {
+																  	  def_depth = tabs;
+																  	  printf("> def depth now set to %d\n", def_depth);
+																  	  return T_ind_def;
+																  	}
+																  	else if (check_var_case()) { // work to be done here 
+																  	  puts(">>> ind var");
+																  	}
+																  	else {
+																  	  no_of_begins++;
+																  	  d[tabs] = 1; // block opened at this depth, not yet closed
+																  	  return T_begin;
+																  	}
+																  }
+																  else if ( tabs < indentation_depth ) {
+																  	indentation_depth = tabs;
+																  	depth_runner = tabs;
+																  	if ( tabs <= def_depth ) {
+																  	  puts("unputting..");
+																	  for ( i = 0; i < tabs; i++ ) unput('\t');
+																	  unput('\n');	
+																  	}	
+																  	// commented out, cuz i think it will return the ends
+																  	// upon reentry 
+																  	// no_of_ends++;
+																  	// return T_end; // check it l8r
+																  }
+
+														      	}
+
+																/*{ number_of_lines++;
 														          tabs = count_tabs( yytext ); 
 																  printf(">>>> indentation_depth = %d\n", indentation_depth);
 																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
@@ -134,6 +194,7 @@ var                                                             { return T_var; 
 																  	printf(">> no_of_begins = %d\n", no_of_begins);
 																  	def_depth--; // this PROBABLY does the job ;)
 																  	end_returned = false; // mark that we will need to return an end to that begin
+																  	d[ indentation_depth ] = 1; // BLOCK OPENED due to mad case ;)
 																  	return T_begin; 														          	
 														          }
 																  if ( tabs > indentation_depth ) { 
@@ -151,6 +212,7 @@ var                                                             { return T_var; 
 																	  no_of_begins++;
 																	  printf("> Returning (normal) begin, @ %d\n", number_of_lines);
 																	  printf(">> no_of_begins = %d\n", no_of_begins);
+																	  d[ indentation_depth ] = 1;
 																	  return T_begin; 
 																  	}
 																  }
@@ -169,6 +231,8 @@ var                                                             { return T_var; 
 																	  unput('\n');	
 																	  end_returned = true;										
   																  	  no_of_ends++;
+  																  	  d[ indentation_depth ] = 0; // BLOCK CLOSED at this depth!
+
 																  	  return T_end;
 																  	}	 
 																  }
@@ -176,7 +240,7 @@ var                                                             { return T_var; 
 																    end_returned = false;
 																    printf("> No indent action taken!\n");
 																  }
-																}
+																}*/
 
 
 <INDENT><<EOF>>													{ printf("Encountered EOF\n");
@@ -354,7 +418,10 @@ void begin_default_mode() {
 }
 
 void begin_indent_mode() {
+	int i;
 	case_id = 1;
+	//d = malloc( sizeof(int) * 1024 );
+	for ( i = 0; i < 1024; i++ ) d[i] = 0; // init the depth array
 	BEGIN(INDENT);
 }
 

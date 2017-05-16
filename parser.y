@@ -12,6 +12,7 @@
 
 void yyerror(const char *msg);
 extern int number_of_lines;
+extern int d[];
 void fatal(char *msg);
 
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
@@ -156,7 +157,7 @@ stmt
 |	proc_call 
 |	T_exit 
 |	T_return ':' expr 
-|	T_if cond ':' {puts("$ starting if block");} block {puts("$ if block ended");} elif_and_block_star else_and_block_req 
+|	T_if cond ':' block elif_and_block_star else_and_block_req 
 |	T_loop id_req ':' block 
 |	T_break colon_id_req 
 |	T_continue colon_id_req
@@ -183,7 +184,7 @@ else_and_block_req
 ;
 
 block
-:	T_begin {puts("$ block begin");} stmt_plus T_end {puts("$ block end");}  
+:	T_begin stmt_plus T_end
 ;
 
 stmt_plus
@@ -297,7 +298,7 @@ int main(int argc, char *argv[]) {
     }
 
   	if ( yyparse() ) return 1;
-
+  	// for (int i = 0; i < 1024; i++) printf("%d", d[i]); // print depth array
 	printf( "COMPILATION SUCCESSFUL!!\n" );
 	printf( "Total number of lines : %d\n" , number_of_lines );
 	return 0;
