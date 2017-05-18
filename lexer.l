@@ -42,7 +42,8 @@ int i;
 int d[1024]; // variable size (?)
 int depth_runner = 0;
 
-int end_returned = false;
+int ends_tbr = false;   // T_ends to be returned
+int begins_tbr = false; // T_begins to be returned
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -60,10 +61,29 @@ W [ ]
 T [\t]
 
 %x COMMENT
+%x SPECIAL
 %s BEGEND
 %s INDENT
 
 %%
+
+<SPECIAL>. 														{ printf("#> %s\n", yytext);
+																  unput(*yytext);
+																  if ( ends_tbr > 0 )  {
+																  	ends_tbr--;
+																  	no_of_ends++;
+																  	printf("> Returning end, %d more\n", ends_tbr);
+																  	return T_end;
+																  }
+																  if ( begins_tbr > 0) {
+																  	begins_tbr--;
+																  	no_of_begins++;
+																  	printf("> Returning begin, %d more\n", begins_tbr);
+																  	return T_begin;
+																  }
+																  puts("$ going back to INDENT");
+																  BEGIN(INDENT);
+																}
 
 <BEGEND>"begin"													{ no_of_begins++; return T_begin; }
 
@@ -126,24 +146,25 @@ var                                                             { return T_var; 
 <INDENT>\n{T}+"(*"												{ nesting = 1; BEGIN(COMMENT);}
 
 <INDENT>\n{T}+													{ number_of_lines++;
-														          tabs = count_tabs( yytext ); printf("# tabs = %d\n", tabs);
+														          tabs = count_tabs( yytext ); printf("# tabs = %d @ %d\n", tabs, number_of_lines);
+
+														          ends_tbr = 0;
+														          begins_tbr = 0;
 
 														          if ( depth_runner > tabs ) {
 														          	printf("$ depth_runner = %d, tabs = %d\n", depth_runner, tabs);
-														          	if ( d[depth_runner-1] == 1 ) {
-														          	  d[depth_runner-1] = 0;
-														          	  depth_runner--;
-														          	  no_of_ends++;
-														          	  printf("> END   @ %d\n", number_of_lines);
-														          	  return T_end;
+														          	while ( depth_runner > def_depth+1 ) {
+														          	  if ( d[depth_runner-1] == 1 ) ends_tbr++;
+														          	  else if ( d[depth_runner-1] == 2 ) {
+														          	  	begins_tbr++; // both need to be returned then ;)
+														          	  	ends_tbr++;
+														          	  }
+														              depth_runner--;
 														          	}
-														          	/*else if ( d[depth_runner-1] == 0 ) {
-														          	  // d[depth_runner-1] should already be zero 
-														          	  depth_runner--;
-														          	  no_of_begins++;
-														          	  printf("> BEGIN @ %d\n", number_of_lines);
-														          	  return T_begin;
-														          	} */// we MAY need more cases, that's why it wasn't an "else" ;)
+
+														          	printf("$$ %d ends and %d begins tbr\n", ends_tbr, begins_tbr);
+														          	BEGIN(SPECIAL);
+
 														          }
 
 														          // should enter the next lines ONLY if the depth_runner
@@ -154,6 +175,7 @@ var                                                             { return T_var; 
 																  	depth_runner = tabs;
 																  	if (check_def_case()) {
 																  	  def_depth = tabs;
+																  	  d[tabs] = 2;
 																  	  printf("> def depth now set to %d\n", def_depth);
 																  	  return T_ind_def;
 																  	}
@@ -163,22 +185,15 @@ var                                                             { return T_var; 
 																  	else {
 																  	  no_of_begins++;
 																  	  d[tabs] = 1; // block opened at this depth, not yet closed
+																  	  puts(">>> normal block begin");
 																  	  return T_begin;
 																  	}
 																  }
 																  else if ( tabs < indentation_depth ) {
 																  	indentation_depth = tabs;
 																  	depth_runner = tabs;
-																  	if ( tabs <= def_depth ) {
-																  	  puts("unputting..");
-																	  for ( i = 0; i < tabs; i++ ) unput('\t');
-																	  unput('\n');	
-																  	}	
-																  	// commented out, cuz i think it will return the ends
-																  	// upon reentry 
-																  	// no_of_ends++;
-																  	// return T_end; // check it l8r
 																  }
+
 
 														      	}
 
