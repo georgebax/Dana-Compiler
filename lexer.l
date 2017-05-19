@@ -41,6 +41,7 @@ int i;
 
 int d[1024]; // variable size (?)
 int depth_runner = 0;
+int dd_reduction;
 
 int ends_tbr = false;   // T_ends to be returned
 int begins_tbr = false; // T_begins to be returned
@@ -153,6 +154,7 @@ var                                                             { return T_var; 
 
 														          if ( depth_runner > tabs ) {
 														          	printf("$ depth_runner = %d, tabs = %d\n", depth_runner, tabs);
+														          	dd_reduction = 0;
 														          	while ( depth_runner > def_depth ) {
 														          	  if ( d[depth_runner-1] == 1 ) {
 														          	  	d[depth_runner-1] = 0;
@@ -162,9 +164,11 @@ var                                                             { return T_var; 
 														          	  	d[depth_runner-1] = 0;
 														          	  	begins_tbr++; // both need to be returned then ;)
 														          	  	ends_tbr++;
+														          	  	dd_reduction++;
 														          	  }
 														              depth_runner--;
 														          	}
+														          	def_depth -= dd_reduction; // dealt with one function
 
 														          	printf("$$ %d ends and %d begins tbr\n", ends_tbr, begins_tbr);
 														          	BEGIN(SPECIAL);

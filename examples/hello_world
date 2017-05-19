@@ -1,13 +1,14 @@
 def hello
 	def i
-		writeString: "sd"
-		writeString: "sd"
-		loop:
-				a := 1
-				a := 1
-				if a=1:
+		def g
+			writeString: "sd"
+			writeString: "sd"
+			loop:
 					a := 1
-		a := 1
+					a := 1
+					if a=1:
+						a := 1
+			a := 1
 		if a>1:
 			a := 1
 			if a>1:
