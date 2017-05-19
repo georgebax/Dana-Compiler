@@ -67,7 +67,7 @@ T [\t]
 
 %%
 
-<SPECIAL>. 														{ printf("#> %s\n", yytext);
+<SPECIAL>. 														{ //printf("#> %s\n", yytext);
 																  unput(*yytext);
 																  if ( ends_tbr > 0 )  {
 																  	ends_tbr--;
@@ -153,9 +153,13 @@ var                                                             { return T_var; 
 
 														          if ( depth_runner > tabs ) {
 														          	printf("$ depth_runner = %d, tabs = %d\n", depth_runner, tabs);
-														          	while ( depth_runner > def_depth+1 ) {
-														          	  if ( d[depth_runner-1] == 1 ) ends_tbr++;
+														          	while ( depth_runner > def_depth ) {
+														          	  if ( d[depth_runner-1] == 1 ) {
+														          	  	d[depth_runner-1] = 0;
+														          	  	ends_tbr++;
+														          	  }
 														          	  else if ( d[depth_runner-1] == 2 ) {
+														          	  	d[depth_runner-1] = 0;
 														          	  	begins_tbr++; // both need to be returned then ;)
 														          	  	ends_tbr++;
 														          	  }
