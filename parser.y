@@ -16,10 +16,18 @@ extern int number_of_lines;
 extern int d[];
 void fatal(char *msg);
 
+ast a;
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
 
 
 %}
+
+%union{
+  ast a;
+  char c;
+  int i;
+  char * s;
+}
 
 %token T_and "and"
 %token T_as "as"
@@ -33,7 +41,6 @@ void fatal(char *msg);
 %token T_else "else"
 %token T_end "end"
 %token T_exit "exit"
-%token T_false "false"
 %token T_if "if"
 %token T_is "is"
 %token T_int "int"
@@ -44,17 +51,19 @@ void fatal(char *msg);
 %token T_return "return"
 %token T_skip "skip"
 %token T_true "true"
+%token T_false "false"
 %token T_var "var"
-%token T_string
-%token T_id
-%token T_const
 %token T_not_equal "<>"
 %token T_greater_equal ">="
 %token T_less_equal "<="
 %token T_assign
-%token T_char_const
 %token T_escape
-%token T_hex
+
+%token<s> T_string
+%token<s> T_id
+%token<i> T_const
+%token<c> T_char_const
+%token<h> T_hex
 
 %token T_ind_def
 
@@ -67,17 +76,22 @@ void fatal(char *msg);
 %nonassoc '!'
 %left UMINUS UPLUS
 
+%type<a> program
+%type<a> stmt_list
+%type<a> stmt
+%type<a> expr
+%type<a> header // we'll see about that
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 %%
 
 program
-:	func_def
+:	func_def { t = $$ = $1 }
 ;
 
 func_def
-:	T_def header T_ind_def_req local_def_star block
+:	T_def header T_ind_def_req local_def_star block { $$ = ast_funcdef($2, $4, $5); }
 ;
 
 T_ind_def_req
@@ -86,27 +100,27 @@ T_ind_def_req
 ;
 
 local_def_star
-:	local_def local_def_star
-|	/*nothing*/ 
+:	local_def local_def_star { $$ = ast_seq($2, $3); }
+|	/*nothing*/ { $$ = NULL; }
 ;
 
 header
-:	T_id is_data_type_req fparameters_req
+:	T_id is_data_type_req fparameters_req { $$ = ast_header($1, $2, $3); }
 ;
 
 is_data_type_req 
-:	T_is data_type
-|	/*nothing*/
+:	T_is data_type { $$ = ast_isdatatype($2); }
+|	/*nothing*/    { $$ = NULL; } // CHECK THIS
 ;
 
 fparameters_req
-:	':' fpar_def comma_fpar_def_star
-|	/*nothing*/ 
+:	':' fpar_def comma_fpar_def_star { $$ = ast_fparams($2, $3); }
+|	/*nothing*/  { $$ = NULL; }
 ;
 
 comma_fpar_def_star
-:	',' fpar_def comma_fpar_def_star
-|	/*nothing*/
+:	',' fpar_def comma_fpar_def_star { $$ = ast_fparams{$2, $3}; } //NEEDS CHECK
+|	/*nothing*/  { $$ = NULL; }
 ;
 
 fpar_def
@@ -119,8 +133,8 @@ id_plus /*(id)+*/
 ;
 
 data_type
-:	T_int
-|	T_byte
+:	T_int  { $$ = $1; /*string!*/ }
+|	T_byte { $$ = $1; /*string!*/ }
 ;
 
 type /*INT_CONST NEEDS ATTENTION!*/
@@ -139,20 +153,20 @@ brackets_int_const_star
 ;
 
 local_def
-:	func_def
-|	func_decl
-|	var_def
+:	func_def  { $$ = ast_localdef($1); }
+|	func_decl { $$ = ast_localdef($1); }
+|	var_def   { $$ = ast_localdef($1); }
 ;
 
 func_decl
-:	"decl" header
+:	"decl" header { $$ = ast_funcdecl($2); }
 ;
 
 var_def
-:	"var" id_plus "is" type
+:	"var" id_plus "is" type { $$ = ast_vardef($2, $4); }
 ;
 
-stmt
+stmt    // TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO 
 :	T_skip 
 |	l_value T_assign expr 
 |	proc_call 
@@ -185,12 +199,12 @@ else_and_block_req
 ;
 
 block
-:	T_begin stmt_plus T_end
+:	T_begin stmt_list T_end { $$ = ast_block($2); }
 ;
 
-stmt_plus
-:	stmt stmt_plus /*EXPERIMENTAL*/
-|	stmt /*and then nothing*/
+stmt_list
+:	stmt stmt_list /*EXPERIMENTAL*/ { $$ = ast_seq($1, $2); }
+|	stmt /*and then nothing*/ { $$ = ast_seq($1, NULL); }
 ;
 
 proc_call
@@ -221,22 +235,23 @@ l_value
 ;
 
 expr
-:	T_const 
-|	T_char_const 
-|	l_value 
-|	'(' expr ')' 
-|	func_call
-|	'+' expr  
-|	'-' expr 
-|	expr '+' expr 
-|	expr '-' expr  
-|	expr '*' expr  
-|	expr '/' expr  
-|	expr '%' expr 
-|	T_true | T_false
-|	'!' expr 
-|	expr '&' expr 
-|	expr '|' expr
+:	T_const 			{ $$ = ast_const($1); }
+|	T_char_const		{ $$ = ast_charconst($1); }
+|	l_value				{ $$ = ast_lval($1); }
+|	'(' expr ')'		{ $$ = $2; }
+|	func_call			{ $$ = ast_funccall($1); }
+|	'+' expr  			{ $$ = ast_op(ast_const(0), PLUS, $3); }
+|	'-' expr 			{ $$ = ast_op(ast_const(0), MINUS, $3); }
+|	expr '+' expr 		{ $$ = ast_op($1, PLUS, $3); }
+|	expr '-' expr  		{ $$ = ast_op($1, MINUS, $3); }
+|	expr '*' expr 		{ $$ = ast_op($1, TIMES, $3); }
+|	expr '/' expr  		{ $$ = ast_op($1, DIV, $3); }
+|	expr '%' expr 		{ $$ = ast_op($1, MOD, $3); }
+|	'!' expr 			{ $$ = ast_op($2, NOT, NULL); }
+|	expr '&' expr 		{ $$ = ast_op($1, AND, $3); }
+|	expr '|' expr 		{ $$ = ast_op($1, OR, $3); }
+|	T_true 				{ $$ = $1; /*$$ = ast_bool($1);*/ }
+|   T_false				{ $$ = $1; /*$$ = ast_bool($1);*/ }
 ;
 
 cond
@@ -245,16 +260,16 @@ cond
 ;
 
 x-cond
-:	'(' x-cond ')' 
-|	T_not cond 
-|	cond T_and cond 
-|	cond T_or  cond 
-|	cond '=' cond 
-|	cond T_not_equal cond 
-|	cond '<' cond 
-|	cond '>' cond 
-|	cond T_greater_equal cond 
-|	cond T_less_equal cond
+:	'(' x-cond ')' 					{ $$ = ast_const($1); }
+|	T_not cond 						{ $$ = ast_op($2, NOT, NULL); }
+|	cond T_and cond 				{ $$ = ast_op($1, AND, $3); }
+|	cond T_or  cond 				{ $$ = ast_op($1, OR, $3); }
+|	cond '=' cond 					{ $$ = ast_op($1 ,EQ, $3); }
+|	cond T_not_equal cond 			{ $$ = ast_op($1, NE, $3); }
+|	cond '<' cond 					{ $$ = ast_op($1, LT, $3); }
+|	cond '>' cond 					{ $$ = ast_op($1, GT, $3); }
+|	cond T_greater_equal cond 		{ $$ = ast_op($1, GE, $3); }
+|	cond T_less_equal cond 			{ $$ = ast_op($1, LE, $3); }
 ;	
 
 
