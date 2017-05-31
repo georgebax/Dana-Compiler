@@ -50,8 +50,8 @@ ast a;
 %token T_ref "ref"
 %token T_return "return"
 %token T_skip "skip"
-%token T_true "true"
-%token T_false "false"
+%token T_true 1  // instead of string
+%token T_false 0 // instead of string
 %token T_var "var"
 %token T_not_equal "<>"
 %token T_greater_equal ">="
@@ -114,30 +114,30 @@ is_data_type_req
 ;
 
 fparameters_req
-:	':' fpar_def comma_fpar_def_star { $$ = ast_fparams($2, $3); }
+:	':' fpar_def comma_fpar_def_star { $$ = ast_seq($2, $3); }
 |	/*nothing*/  { $$ = NULL; }
 ;
 
 comma_fpar_def_star
-:	',' fpar_def comma_fpar_def_star { $$ = ast_fparams{$2, $3}; } //NEEDS CHECK
+:	',' fpar_def comma_fpar_def_star { $$ = ast_seq{$2, $3}; } //NEEDS CHECK
 |	/*nothing*/  { $$ = NULL; }
 ;
 
 fpar_def
-:	id_plus T_as fpar_type
+:	id_plus T_as fpar_type { $$ = ast_seq($1, $2); }
 ;
 
 id_plus /*(id)+*/
-:	T_id /*and then nothing*/
-|	T_id id_plus
+:	T_id         { $$ = ast_seq($1, NULL); }
+|	T_id id_plus { $$ = ast_seq($1, $2); }
 ;
 
 data_type
-:	T_int  { $$ = $1; /*string!*/ }
-|	T_byte { $$ = $1; /*string!*/ }
+:	T_int  { $$ = $1; /*string! prob need to put something else!*/ }
+|	T_byte { $$ = $1; /*string! prob need to put something else!*/ }
 ;
 
-type /*INT_CONST NEEDS ATTENTION!*/
+type 
 :	data_type brackets_int_const_star
 ;
 
