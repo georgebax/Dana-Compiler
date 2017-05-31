@@ -91,12 +91,7 @@ program
 ;
 
 func_def
-:	T_def header T_ind_def_req local_def_star block { $$ = ast_funcdef($2, $4, $5); }
-;
-
-T_ind_def_req
-:	T_ind_def
-|	/*nothing*/
+:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); }
 ;
 
 local_def_star
