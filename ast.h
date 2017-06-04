@@ -11,3 +11,14 @@ typedef enum {
   	PLUS, MINUS, TIMES, DIV, MOD,
   	LT, GT, LE, GE, EQ, NE, AND_COND, OR_COND, NOT_COND, AND_LOG, OR_LOG, NOT_LOG, DECL, BLOCK
 } kind;
+
+typedef struct node {
+	kind k;
+	char id;
+	int num;
+	struct node *left, *right;
+	int nesting_diff;  // ID and LET nodes
+	int offset;        // ID and LET nodes
+	int num_vars;      // BLOCK node
+	Type type;
+} *ast;

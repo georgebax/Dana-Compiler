@@ -27,6 +27,7 @@ ast a;
   char c;
   int i;
   char * s;
+  Type t;
 }
 
 %token T_and "and"
@@ -87,7 +88,7 @@ ast a;
 %%
 
 program
-:	func_def { t = $$ = $1 }
+:	func_def { t = $$ = $1; }
 ;
 
 func_def
@@ -95,8 +96,8 @@ func_def
 ;
 
 local_def_star
-:	local_def local_def_star { $$ = ast_seq($2, $3); }
-|	/*nothing*/ { $$ = NULL; }
+:	local_def local_def_star 	{ $$ = ast_seq($2, $3); }
+|	/*nothing*/ 				{ $$ = NULL; }
 ;
 
 header
@@ -109,13 +110,13 @@ is_data_type_req
 ;
 
 fparameters_req
-:	':' fpar_def comma_fpar_def_star { $$ = ast_seq($2, $3); }
-|	/*nothing*/  { $$ = NULL; }
+:	':' fpar_def comma_fpar_def_star	{ $$ = ast_seq($2, $3); }
+|	/*nothing*/  						{ $$ = NULL; }
 ;
 
 comma_fpar_def_star
-:	',' fpar_def comma_fpar_def_star { $$ = ast_seq{$2, $3}; } //NEEDS CHECK
-|	/*nothing*/  { $$ = NULL; }
+:	',' fpar_def comma_fpar_def_star 	{ $$ = ast_seq{$2, $3}; } //NEEDS CHECK
+|	/*nothing*/  						{ $$ = NULL; }
 ;
 
 fpar_def
@@ -133,13 +134,13 @@ data_type
 ;
 
 type 
-:	data_type brackets_int_const_star
+:	data_type brackets_int_const_star { $$ =  }
 ;
 
 fpar_type
-:	type
-|	T_ref data_type 
-|	data_type '[' ']' brackets_int_const_star
+:	type                                      { $$ = ast_fpartype($1, NULL); }
+|	T_ref data_type                           { $$ = ast_fpartype($1, NULL); }
+|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, ); }
 ;
 
 brackets_int_const_star
@@ -161,21 +162,21 @@ var_def
 :	"var" id_plus "is" type { $$ = ast_vardef($2, $4); }
 ;
 
-stmt    // TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO TO DO 
-:	T_skip 
-|	l_value T_assign expr 
-|	proc_call 
-|	T_exit 
-|	T_return ':' expr 
-|	T_if cond ':' block elif_and_block_star else_and_block_req 
-|	T_loop id_req ':' block 
-|	T_break colon_id_req 
-|	T_continue colon_id_req
+stmt 
+:	T_skip { $$ = ast_skip($1); }
+|	l_value T_assign expr { $$ = ast_ass($1, $3); }
+|	proc_call { $$ = ast_proccall($1); }
+|	T_exit { $$ = ast_exit($1); }
+|	T_return ':' expr { $$ = ast_ret($1); }
+|	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4); }
+|	T_loop id_req ':' block { $$ = ast_loop($2, $4); }
+|	T_break colon_id_req { $$ = ast_break($2); }
+|	T_continue colon_id_req { $$ = ast_cont($2); }
 ;
 
-id_req
+id_req 
 :	/*nothing*/
-|	T_id
+|	T_id { $$ = $1; /*STRING?*/}
 ;
 
 colon_id_req
@@ -250,8 +251,8 @@ expr
 ;
 
 cond
-:	expr
-| 	x-cond
+:	expr 				{ $$ = $1; /*The  expr  node is not calculated here!*/}
+| 	x-cond				{ $$ = $1; /*The x-cond node is not calculated here!*/}
 ;
 
 x-cond
