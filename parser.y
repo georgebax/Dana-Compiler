@@ -7,6 +7,7 @@
 #include <string.h>
 #include "ast.h"
 #include "lexer.h"
+#include "symbol.h"
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -87,15 +88,17 @@ ast a;
 
 %%
 
-program
+/* MARKED WITH '//' ARE THE RULES FOR WHICH WE ARE PRETTY CONFIDENT THAT THEY ARE CORRECT... */
+
+program // 
 :	func_def { t = $$ = $1; }
 ;
 
-func_def
-:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); }
+func_def //
+:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); } // the block needs to be RIGHT (?)
 ;
 
-local_def_star
+local_def_star // 
 :	local_def local_def_star 	{ $$ = ast_seq($2, $3); }
 |	/*nothing*/ 				{ $$ = NULL; }
 ;
@@ -105,7 +108,7 @@ header
 ;
 
 is_data_type_req 
-:	T_is data_type { $$ = ast_isdatatype($2); }
+:	T_is data_type { $$ = $2; }
 |	/*nothing*/    { $$ = NULL; } // CHECK THIS
 ;
 
@@ -115,29 +118,29 @@ fparameters_req
 ;
 
 comma_fpar_def_star
-:	',' fpar_def comma_fpar_def_star 	{ $$ = ast_seq{$2, $3}; } //NEEDS CHECK
+:	',' fpar_def comma_fpar_def_star 	{ $$ = ast_seq{$2, $3}; } // NEEDS CHECK
 |	/*nothing*/  						{ $$ = NULL; }
 ;
 
 fpar_def
-:	id_plus T_as fpar_type { $$ = ast_seq($1, $2); }
+:	id_plus T_as fpar_type { $$ =  }
 ;
 
-id_plus /*(id)+*/
+id_plus //
 :	T_id         { $$ = ast_seq($1, NULL); }
 |	T_id id_plus { $$ = ast_seq($1, $2); }
 ;
 
-data_type
-:	T_int  { $$ = $1; /*string! prob need to put something else!*/ }
-|	T_byte { $$ = $1; /*string! prob need to put something else!*/ }
+data_type //
+:	T_int  { $$ = typeInteger; }
+|	T_byte { $$ = typeInteger;/*typeByte;*/ } // TODO: DEFINE THAT
 ;
 
 type 
 :	data_type brackets_int_const_star { $$ =  }
 ;
 
-fpar_type
+fpar_type 
 :	type                                      { $$ = ast_fpartype($1, NULL); }
 |	T_ref data_type                           { $$ = ast_fpartype($1, NULL); }
 |	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, ); }
@@ -148,94 +151,96 @@ brackets_int_const_star
 |	/*nothing*/
 ;
 
-local_def
+local_def //
 :	func_def  { $$ = ast_localdef($1); }
 |	func_decl { $$ = ast_localdef($1); }
 |	var_def   { $$ = ast_localdef($1); }
 ;
 
-func_decl
+func_decl //
 :	"decl" header { $$ = ast_funcdecl($2); }
 ;
 
-var_def
+var_def // 
 :	"var" id_plus "is" type { $$ = ast_vardef($2, $4); }
 ;
 
-stmt 
+stmt // except maybe for ast_proccall();
 :	T_skip { $$ = ast_skip($1); }
-|	l_value T_assign expr { $$ = ast_ass($1, $3); }
+|	l_value T_assign expr { $$ = ast_ass($1, $3); } // the name *probably* needs to be changed....
 |	proc_call { $$ = ast_proccall($1); }
 |	T_exit { $$ = ast_exit($1); }
 |	T_return ':' expr { $$ = ast_ret($1); }
-|	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4); }
+|	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4, $5, $6); }
 |	T_loop id_req ':' block { $$ = ast_loop($2, $4); }
 |	T_break colon_id_req { $$ = ast_break($2); }
 |	T_continue colon_id_req { $$ = ast_cont($2); }
 ;
 
-id_req 
-:	/*nothing*/
-|	T_id { $$ = $1; /*STRING?*/}
+id_req //
+:	/*nothing*/ { $$ = NULL; }
+|	T_id 		{ $$ = ast_id($1); }
 ;
 
-colon_id_req
-:	':' T_id
-|	/*nothing*/
+colon_id_req //
+:	':' T_id 	{ $$ = ast_id($2); }
+|	/*nothing*/ { $$ = NULL; }
 ;
 
-elif_and_block_star
-:	T_elif cond ':' block elif_and_block_star
-|	/*nothing*/
+elif_and_block_star //
+:	T_elif cond ':' block elif_and_block_star { $$ = ast_elif($2, $4, $5); }
+|	/*nothing*/ { $$ = NULL; }
 ;	
 
-else_and_block_req
-:	T_else ':' block
-|	/*nothing*/
+else_and_block_req //
+:	T_else ':' block 	{ $$ = ast_else($3); }
+|	/*nothing*/ 		{ $$ = NULL; }
 ;
 
-block
+block // 
 :	T_begin stmt_list T_end { $$ = ast_block($2); }
 ;
 
-stmt_list
-:	stmt stmt_list /*EXPERIMENTAL*/ { $$ = ast_seq($1, $2); }
-|	stmt /*and then nothing*/ { $$ = ast_seq($1, NULL); }
+stmt_list // 
+:	stmt stmt_list	{ $$ = ast_seq($1, $2); }
+|	stmt 			{ $$ = ast_seq($1, NULL); }
 ;
 
-proc_call
-:	T_id colon_expr_req
+proc_call // 
+:	T_id colon_expr_req { $$ = ast_proccall($1, $2); }
 ;
 
-colon_expr_req
-:	/*nothing*/ 
-|	':' expr comma_expr_star
+colon_expr_req //
+:	/*nothing*/ 				{ $$ = NULL; } 
+|	':' expr comma_expr_star 	{ $$ = ast_seq($1, $2); }
 ;
 
-func_call
-:	T_id '(' expr_comma_expr_req ')'
+func_call //
+:	T_id '(' expr_comma_expr_req ')' { $$ = ast_funccall($1, $3); }
 ;
 
-expr_comma_expr_req
-:	/*nothing*/ 
-|	expr comma_expr_star
+expr_comma_expr_req // 
+:	/*nothing*/  			{ $$ = NULL; }
+|	expr comma_expr_star	{ $$ = ast_seq($1, $2); }
 ;
 
-comma_expr_star
-:	/*nothing*/ 
-|	',' expr comma_expr_star
+comma_expr_star // 
+:	/*nothing*/  				{ $$ = NULL; }
+|	',' expr comma_expr_star	{ $$ = ast_seq($2, $3); } // experimental...
 ;
 
-l_value
-:	T_id | T_string | l_value '[' expr ']'
+l_value // 
+:	T_id 				{ $$ = ast_lval($1, "T_id"); }
+|	T_string 			{ $$ = ast_lval($1, "T_string"; }
+|	l_value '[' expr ']'{ $$ = ast_lval($1, $3, ""; }
 ;
 
-expr
+expr //
 :	T_const 			{ $$ = ast_const($1); }
 |	T_char_const		{ $$ = ast_charconst($1); }
-|	l_value				{ $$ = ast_lval($1); }
+|	l_value				{ $$ = $1; }
 |	'(' expr ')'		{ $$ = $2; }
-|	func_call			{ $$ = ast_funccall($1); }
+|	func_call			{ $$ = $1; }
 |	'+' expr  			{ $$ = ast_op(ast_const(0), PLUS, $3); }
 |	'-' expr 			{ $$ = ast_op(ast_const(0), MINUS, $3); }
 |	expr '+' expr 		{ $$ = ast_op($1, PLUS, $3); }
@@ -246,8 +251,8 @@ expr
 |	'!' expr 			{ $$ = ast_op($2, NOT, NULL); }
 |	expr '&' expr 		{ $$ = ast_op($1, AND, $3); }
 |	expr '|' expr 		{ $$ = ast_op($1, OR, $3); }
-|	T_true 				{ $$ = $1; /*$$ = ast_bool($1);*/ }
-|   T_false				{ $$ = $1; /*$$ = ast_bool($1);*/ }
+|	T_true 				{ $$ = ast_bool($1); }
+|   T_false				{ $$ = ast_bool($1); }
 ;
 
 cond

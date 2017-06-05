@@ -17,8 +17,9 @@ typedef struct node {
 	char id;
 	int num;
 	struct node *left, *right;
+	node * header;     // FUNC node
 	int nesting_diff;  // ID and LET nodes
 	int offset;        // ID and LET nodes
 	int num_vars;      // BLOCK node
-	Type type;
+	Type type;         // HEADER node
 } *ast;
