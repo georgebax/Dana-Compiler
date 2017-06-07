@@ -103,27 +103,27 @@ local_def_star //
 |	/*nothing*/ 				{ $$ = NULL; }
 ;
 
-header
+header // think so
 :	T_id is_data_type_req fparameters_req { $$ = ast_header($1, $2, $3); }
 ;
 
-is_data_type_req 
-:	T_is data_type { $$ = $2; }
+is_data_type_req //
+:	T_is data_type { $$ = $2; /*datatype will be embedded in the header(?)*/ }
 |	/*nothing*/    { $$ = NULL; } // CHECK THIS
 ;
 
-fparameters_req
+fparameters_req // 
 :	':' fpar_def comma_fpar_def_star	{ $$ = ast_seq($2, $3); }
 |	/*nothing*/  						{ $$ = NULL; }
 ;
 
-comma_fpar_def_star
-:	',' fpar_def comma_fpar_def_star 	{ $$ = ast_seq{$2, $3}; } // NEEDS CHECK
+comma_fpar_def_star //
+:	',' fpar_def comma_fpar_def_star 	{ $$ = ast_seq($2, $3); } 
 |	/*nothing*/  						{ $$ = NULL; }
 ;
 
-fpar_def
-:	id_plus T_as fpar_type { $$ =  }
+fpar_def //
+:	id_plus T_as fpar_type { $$ = ast_seq($1, $3); } // all the vars on the left, type on the right
 ;
 
 id_plus //
@@ -136,19 +136,19 @@ data_type //
 |	T_byte { $$ = typeInteger;/*typeByte;*/ } // TODO: DEFINE THAT
 ;
 
-type 
-:	data_type brackets_int_const_star { $$ =  }
+type //
+:	data_type brackets_int_const_star { $$ = ast_type($1, $2); }
 ;
 
-fpar_type 
-:	type                                      { $$ = ast_fpartype($1, NULL); }
-|	T_ref data_type                           { $$ = ast_fpartype($1, NULL); }
-|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, ); }
+fpar_type // we have the ast_fpartype to distinguish the 3 different cases
+:	type                                      { $$ = ast_fpartype($1, NULL, "val"); }
+|	T_ref data_type                           { $$ = ast_fpartype($1, NULL, "ref"); }
+|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, NULL, "ref"); /*NOT SURE*/ }
 ;
 
-brackets_int_const_star
-:	'[' T_const ']' brackets_int_const_star
-|	/*nothing*/
+brackets_int_const_star // 
+:	'[' T_const ']' brackets_int_const_star { $$ = ast_seq($2, $4); }
+|	/*nothing*/ { $$ = NULL; }
 ;
 
 local_def //
@@ -255,13 +255,13 @@ expr //
 |   T_false				{ $$ = ast_bool($1); }
 ;
 
-cond
+cond //
 :	expr 				{ $$ = $1; /*The  expr  node is not calculated here!*/}
 | 	x-cond				{ $$ = $1; /*The x-cond node is not calculated here!*/}
 ;
 
-x-cond
-:	'(' x-cond ')' 					{ $$ = ast_const($1); }
+x-cond // 
+:	'(' x-cond ')' 					{ $$ = $2; }
 |	T_not cond 						{ $$ = ast_op($2, NOT, NULL); }
 |	cond T_and cond 				{ $$ = ast_op($1, AND, $3); }
 |	cond T_or  cond 				{ $$ = ast_op($1, OR, $3); }
