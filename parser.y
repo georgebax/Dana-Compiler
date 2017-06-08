@@ -84,6 +84,7 @@ ast a;
 %type<a> header
 %type<a> is_data_type_req
 %type<a> fparameters_req
+%type<a> comma_fpar_def_star
 %type<a> fpar_def
 %type<a> id_plus
 %type<a> data_type
@@ -109,8 +110,6 @@ ast a;
 %type<a> x-cond
 %type<a> cond
 %type<a> stmt_list
-%type<a> stmt
-%type<a> header // we'll see about that
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -123,11 +122,11 @@ program //
 ;
 
 func_def //
-:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); } // the block needs to be on the RIGHT
+:	T_def header local_def_star block { $$ = ast_funcdef($2, $3, $4); } // the block needs to be on the RIGHT
 ;
 
 local_def_star // 
-:	local_def local_def_star 	{ $$ = ast_seq($2, $3); }
+:	local_def local_def_star 	{ $$ = ast_seq($1, $2); }
 |	/*nothing*/ 				{ $$ = NULL; }
 ;
 
@@ -170,7 +169,7 @@ type //
 
 fpar_type // we have the ast_fpartype to distinguish the 3 different cases
 :	type                                      { $$ = ast_fpartype($1, NULL, "val"); }
-|	T_ref data_type                           { $$ = ast_fpartype($1, NULL, "ref"); }
+|	T_ref data_type                           { $$ = ast_fpartype($2, NULL, "ref"); }
 |	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, NULL, "ref"); /*NOT SURE*/ }
 ;
 
@@ -194,11 +193,11 @@ var_def //
 ;
 
 stmt // except maybe for ast_proccall();
-:	T_skip { $$ = ast_skip($1); }
+:	T_skip { $$ = ast_skip(); }
 |	l_value T_assign expr { $$ = ast_ass($1, $3); } // the name *probably* needs to be changed....
 |	proc_call { $$ = ast_proccall($1); }
-|	T_exit { $$ = ast_exit($1); }
-|	T_return ':' expr { $$ = ast_ret($1); }
+|	T_exit { $$ = ast_exit(); }
+|	T_return ':' expr { $$ = ast_ret($3); }
 |	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4, $5, $6); }
 |	T_loop id_req ':' block { $$ = ast_loop($2, $4); }
 |	T_break colon_id_req { $$ = ast_break($2); }
@@ -240,7 +239,7 @@ proc_call //
 
 colon_expr_req //
 :	/*nothing*/ 				{ $$ = NULL; } 
-|	':' expr comma_expr_star 	{ $$ = ast_seq($1, $2); }
+|	':' expr comma_expr_star 	{ $$ = ast_seq($2, $3); }
 ;
 
 func_call //
@@ -269,8 +268,8 @@ expr //
 |	l_value				{ $$ = $1; }
 |	'(' expr ')'		{ $$ = $2; }
 |	func_call			{ $$ = $1; }
-|	'+' expr  			{ $$ = ast_op(ast_const(0), PLUS, $3); }
-|	'-' expr 			{ $$ = ast_op(ast_const(0), MINUS, $3); }
+|	'+' expr  			{ $$ = ast_op(ast_const(0), PLUS, $2); }
+|	'-' expr 			{ $$ = ast_op(ast_const(0), MINUS, $2); }
 |	expr '+' expr 		{ $$ = ast_op($1, PLUS, $3); }
 |	expr '-' expr  		{ $$ = ast_op($1, MINUS, $3); }
 |	expr '*' expr 		{ $$ = ast_op($1, TIMES, $3); }
@@ -279,8 +278,8 @@ expr //
 |	'!' expr 			{ $$ = ast_op($2, NOT, NULL); }
 |	expr '&' expr 		{ $$ = ast_op($1, AND, $3); }
 |	expr '|' expr 		{ $$ = ast_op($1, OR, $3); }
-|	T_true 				{ $$ = ast_bool($1); }
-|   T_false				{ $$ = ast_bool($1); }
+|	T_true 				{ $$ = ast_bool(true); }
+|   T_false				{ $$ = ast_bool(false); }
 ;
 
 cond //
