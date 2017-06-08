@@ -79,9 +79,37 @@ ast a;
 %left UMINUS UPLUS
 
 %type<a> program
+%type<a> func_def
+%type<a> local_def_star
+%type<a> header
+%type<a> is_data_type_req
+%type<a> fparameters_req
+%type<a> fpar_def
+%type<a> id_plus
+%type<a> data_type
+%type<t> type
+%type<a> fpar_type
+%type<a> brackets_int_const_star
+%type<a> local_def
+%type<a> func_decl
+%type<a> var_def
+%type<a> stmt
+%type<a> id_req
+%type<a> colon_id_req
+%type<a> elif_and_block_star
+%type<a> else_and_block_req
+%type<a> block
+%type<a> proc_call
+%type<a> colon_expr_req
+%type<a> func_call
+%type<a> expr_comma_expr_req
+%type<a> comma_expr_star
+%type<a> l_value
+%type<a> expr
+%type<a> x-cond
+%type<a> cond
 %type<a> stmt_list
 %type<a> stmt
-%type<a> expr
 %type<a> header // we'll see about that
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -95,7 +123,7 @@ program //
 ;
 
 func_def //
-:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); } // the block needs to be RIGHT (?)
+:	T_def header local_def_star block { $$ = ast_funcdef($2, $4, $5); } // the block needs to be on the RIGHT
 ;
 
 local_def_star // 
