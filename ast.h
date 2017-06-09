@@ -23,3 +23,5 @@ typedef struct node {
 	int num_vars;      // BLOCK node
 	Type type;         // HEADER node
 } *ast;
+
+#endif

@@ -220,7 +220,7 @@ var                                                             { return T_var; 
 <BEGEND>\n{T}+													{ number_of_lines++; }
 
 
-\'{HEN}\'														{ yylval.intval = htoi(yytext); return T_hex; }
+\'{HEN}\'														{ yylval.i = htoi(yytext); return T_hex; }
 
 
 \'{ESC}\'														{ return T_escape; }
@@ -240,10 +240,8 @@ var                                                             { return T_var; 
 <COMMENT>"(*" 													{ nesting++; }
 <COMMENT>"*)"		  				               	            { nesting--; 
 																  if ( nesting == 0 ) {
-																  	if (case_id == 0)
-																  	  BEGIN(BEGEND); 
-																  	else
-																  	  BEGIN(INDENT);
+																  	if (case_id == 0) BEGIN(BEGEND); 
+																  	else BEGIN(INDENT);
 																  }
 																}
 
