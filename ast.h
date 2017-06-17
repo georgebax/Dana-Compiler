@@ -4,6 +4,7 @@
 #include "symbol.h"
 
 typedef enum {
+	FUNC_DEF
 	AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
 	LPAR, RPAR, LBRAC, RBRAC, COMMA, COLON, ASSIGN,
 	PRINT, FOR, SEQ/*NOTED*/,
@@ -17,11 +18,11 @@ typedef struct node {
 	char id;
 	int num;
 	struct node *left, *right;
-	struct node * header;     // FUNC node
-	int nesting_diff;  // ID and LET nodes
-	int offset;        // ID and LET nodes
-	int num_vars;      // BLOCK node
-	Type type;         // HEADER node
+	struct node * header;	// FUNC node
+	int nesting_diff;  		// ID and LET nodes
+	int offset;        		// ID and LET nodes
+	int num_vars;      		// BLOCK node
+	Type type;         		// HEADER node
 } *ast;
 
 #endif
