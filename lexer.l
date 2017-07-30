@@ -22,6 +22,7 @@ void begin_indent_mode();
 void begin_default_mode();
 int check_def_case();
 int check_var_case();
+int htoi(char *hex);
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -319,26 +320,29 @@ int count_tabs( char *txt ) {
 
 int switch_hex( char c ) {
 	switch(c) {
-	case 'a':
-	case 'A':
-		return 10;
-	case 'b':
-	case 'B':
-		return 11;
-	case 'c':
-	case 'C':
-		return 12;
-	case 'd':
-	case 'D':
-		return 13;
-	case 'e':
-	case 'E':
-		return 14;
-	case 'f':
-	case 'F':
-		return 15;
-	default :
-		return atoi(c);
+		case 'a':
+		case 'A':
+			return 10;
+		case 'b':
+		case 'B':
+			return 11;
+		case 'c':
+		case 'C':
+			return 12;
+		case 'd':
+		case 'D':
+			return 13;
+		case 'e':
+		case 'E':
+			return 14;
+		case 'f':
+		case 'F':
+			return 15;
+		default : {
+			char temp[2] = {c, '\0'};
+			return atoi(temp);
+		}
+	}
 }
 
 int htoi( char *hex ) { // converts '/x{HEX}{HEX}/' to integer

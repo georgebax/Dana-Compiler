@@ -21,7 +21,7 @@ extern int number_of_lines;
 extern int d[];
 void fatal(char *msg);
 
-ast a;
+ast t;
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -174,7 +174,7 @@ type //
 fpar_type // we have the ast_fpartype to distinguish the 3 different cases
 :	type                                      { $$ = ast_fpartype(NULL, $1); /*val*/ }
 |	T_ref data_type                           { $$ = ast_fpartype($2, NULL); /*ref*/}
-|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, $3); /*this is by ref*/ }
+|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, $4); /*this is by ref*/ }
 ; /* they will be distinguished later on! */
 
 brackets_int_const_star // 
@@ -279,9 +279,9 @@ expr //
 |	expr '*' expr 		{ $$ = ast_op($1, TIMES, $3); }
 |	expr '/' expr  		{ $$ = ast_op($1, DIV, $3); }
 |	expr '%' expr 		{ $$ = ast_op($1, MOD, $3); }
-|	'!' expr 			{ $$ = ast_op($2, NOT, NULL); }
-|	expr '&' expr 		{ $$ = ast_op($1, AND, $3); }
-|	expr '|' expr 		{ $$ = ast_op($1, OR, $3); }
+|	'!' expr 			{ $$ = ast_op($2, NOT_LOG, NULL); }
+|	expr '&' expr 		{ $$ = ast_op($1, AND_LOG, $3); }
+|	expr '|' expr 		{ $$ = ast_op($1, OR_LOG, $3); }
 |	T_true 				{ $$ = ast_bool(true); }
 |   T_false				{ $$ = ast_bool(false); }
 ;
@@ -293,9 +293,9 @@ cond //
 
 x-cond // 
 :	'(' x-cond ')' 					{ $$ = $2; }
-|	T_not cond 						{ $$ = ast_op($2, NOT, NULL); }
-|	cond T_and cond 				{ $$ = ast_op($1, AND, $3); }
-|	cond T_or  cond 				{ $$ = ast_op($1, OR, $3); }
+|	T_not cond 						{ $$ = ast_op($2, NOT_COND, NULL); }
+|	cond T_and cond 				{ $$ = ast_op($1, AND_COND, $3); }
+|	cond T_or  cond 				{ $$ = ast_op($1, OR_COND, $3); }
 |	cond '=' cond 					{ $$ = ast_op($1 ,EQ, $3); }
 |	cond T_not_equal cond 			{ $$ = ast_op($1, NE, $3); }
 |	cond '<' cond 					{ $$ = ast_op($1, LT, $3); }

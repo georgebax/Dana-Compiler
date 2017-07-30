@@ -6,7 +6,7 @@
 #define STRMAX 128
 
 typedef enum {
-	FUNC_DEF, AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
+	FUNCDEF, AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
 	LPAR, RPAR, LBRAC, RBRAC, COMMA, COLON, ASSIGN,
 	HEADER, IDR, TYPE, FPARTYPE, PROCCALL, FUNCCALL, LVAL, BOOL,
 	PRINT, FOR, SEQ,
@@ -27,5 +27,30 @@ typedef struct node {
 	int num_vars;      		// BLOCK node
 	Type type;         		// HEADER node
 } *ast;
+
+ast ast_funcdef(ast h, ast l, ast r);
+ast ast_seq(ast l, ast r);
+ast ast_header(char *id, ast idr, ast fpr);
+ast ast_idr(Type datatype); //ast_is_datatype_req
+ast ast_type(Type datatype, ast bics); // brackets_int_const_star
+ast ast_fpar_type(Type datatype, ast l);
+ast ast_localdef(ast l, kind k);
+ast ast_skip();
+ast ast_ass(ast l, ast r);
+ast ast_proccall(ast l, ast r);
+ast ast_exit();
+ast ast_ret(ast l);
+ast ast_loop(char *id, ast l);
+ast ast_break(char *id);
+ast ast_break(char *id);
+ast ast_block(ast l);
+ast ast_funccall(char *id, ast l);
+ast ast_lval(ast l, ast r, char *type);
+ast ast_const(int n);
+ast ast_charconst(char c);
+ast ast_op(ast l, kind k, ast r);
+ast ast_bool(int value);
+
+
 
 #endif

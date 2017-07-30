@@ -28,7 +28,7 @@ ast ast_seq(ast l, ast r) {
 	return ( r ? ast_make(SEQ, NULL, 0, l, r, NULL) : l);
 }
 
-ast ast_header(char* id, ast idr, ast fpr) {
+ast ast_header(char *id, ast idr, ast fpr) {
   return ast_make(HEADER, id, 0, idr, fpr, NULL);
 }
 
@@ -70,15 +70,15 @@ ast ast_ret(ast l) {
 
 // ast ast_if(ast )
 
-ast ast_loop(char* id, ast l) {
+ast ast_loop(char *id, ast l) {
   return ast_make(LOOP, id, 0, l, NULL, NULL);
 }
 
-ast ast_break(char* id) {
+ast ast_break(char *id) {
  return ast_make(BREAK, id, 0, NULL, NULL, NULL); 
 }
 
-ast ast_break(char* id) {
+ast ast_break(char *id) {
  return ast_make(CONT, id, 0, NULL, NULL, NULL); 
 }
 
@@ -89,11 +89,11 @@ ast ast_block(ast l) {
   return ast_make(BLOCK, NULL, 0, l, NULL, NULL); 
 }
 
-ast ast_funccall(char* id, ast l) {
+ast ast_funccall(char *id, ast l) {
   return ast_make(FUNCCALL, id, 0, l, NULL, NULL);
 }
 
-ast ast_lval(ast l, ast r, char* type) {
+ast ast_lval(ast l, ast r, char *type) {
   return ast_make(LVAL, type, 0, l, r, NULL);
 }
 
