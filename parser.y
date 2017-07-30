@@ -12,6 +12,10 @@
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
+#define true  1
+#define false 0
+
+
 void yyerror(const char *msg);
 extern int number_of_lines;
 extern int d[];
@@ -87,8 +91,8 @@ ast a;
 %type<a> comma_fpar_def_star
 %type<a> fpar_def
 %type<a> id_plus
-%type<a> data_type
-%type<t> type
+%type<t> data_type
+%type<a> type
 %type<a> fpar_type
 %type<a> brackets_int_const_star
 %type<a> local_def
@@ -135,8 +139,8 @@ header // think so
 ;
 
 is_data_type_req //
-:	T_is data_type { $$ = $2; /*datatype will be embedded in the header(?)*/ }
-|	/*nothing*/    { $$ = NULL; } // CHECK THIS
+:	T_is data_type { $$ = ast_idr($2); }
+|	/*nothing*/    { $$ = NULL; }
 ;
 
 fparameters_req // 
@@ -168,10 +172,10 @@ type //
 ;
 
 fpar_type // we have the ast_fpartype to distinguish the 3 different cases
-:	type                                      { $$ = ast_fpartype($1, NULL, "val"); }
-|	T_ref data_type                           { $$ = ast_fpartype($2, NULL, "ref"); }
-|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, NULL, "ref"); /*NOT SURE*/ }
-;
+:	type                                      { $$ = ast_fpartype(NULL, $1); /*val*/ }
+|	T_ref data_type                           { $$ = ast_fpartype($2, NULL); /*ref*/}
+|	data_type '[' ']' brackets_int_const_star { $$ = ast_fpartype($1, $3); /*this is by ref*/ }
+; /* they will be distinguished later on! */
 
 brackets_int_const_star // 
 :	'[' T_const ']' brackets_int_const_star { $$ = ast_seq($2, $4); }
@@ -179,9 +183,9 @@ brackets_int_const_star //
 ;
 
 local_def //
-:	func_def  { $$ = ast_localdef($1); }
-|	func_decl { $$ = ast_localdef($1); }
-|	var_def   { $$ = ast_localdef($1); }
+:	func_def  { $$ = ast_localdef($1, FUNCDEF); }
+|	func_decl { $$ = ast_localdef($1, FUNCDECL); }
+|	var_def   { $$ = ast_localdef($1, VARDEF); }
 ;
 
 func_decl //
@@ -192,10 +196,10 @@ var_def //
 :	"var" id_plus "is" type { $$ = ast_vardef($2, $4); }
 ;
 
-stmt // except maybe for ast_proccall();
+stmt // 
 :	T_skip { $$ = ast_skip(); }
 |	l_value T_assign expr { $$ = ast_ass($1, $3); } // the name *probably* needs to be changed....
-|	proc_call { $$ = ast_proccall($1); }
+|	proc_call { $$ = $1; }
 |	T_exit { $$ = ast_exit(); }
 |	T_return ':' expr { $$ = ast_ret($3); }
 |	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4, $5, $6); }
@@ -206,11 +210,11 @@ stmt // except maybe for ast_proccall();
 
 id_req //
 :	/*nothing*/ { $$ = NULL; }
-|	T_id 		{ $$ = ast_id($1); }
+|	T_id 		{ $$ = $1; }
 ;
 
 colon_id_req //
-:	':' T_id 	{ $$ = ast_id($2); }
+:	':' T_id 	{ $$ = $2; }
 |	/*nothing*/ { $$ = NULL; }
 ;
 
@@ -257,9 +261,9 @@ comma_expr_star //
 ;
 
 l_value // 
-:	T_id 				{ $$ = ast_lval($1, "T_id"); }
-|	T_string 			{ $$ = ast_lval($1, "T_string"; }
-|	l_value '[' expr ']'{ $$ = ast_lval($1, $3, ""; }
+:	T_id 				{ $$ = ast_lval($1, NULL, "Id"); }
+|	T_string 			{ $$ = ast_lval($1, NULL, "String"; }
+|	l_value '[' expr ']'{ $$ = ast_lval($1, $3, "Element"); }
 ;
 
 expr //

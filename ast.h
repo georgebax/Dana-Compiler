@@ -3,11 +3,13 @@
 
 #include "symbol.h"
 
+#define STRMAX 128
+
 typedef enum {
-	FUNC_DEF
-	AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
+	FUNC_DEF, AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
 	LPAR, RPAR, LBRAC, RBRAC, COMMA, COLON, ASSIGN,
-	PRINT, FOR, SEQ/*NOTED*/,
+	HEADER, IDR, TYPE, FPARTYPE, PROCCALL, FUNCCALL, LVAL, BOOL,
+	PRINT, FOR, SEQ,
   	ID, NUM_CONST, CHAR_CONST, STRING, HEX, ESC, 
   	PLUS, MINUS, TIMES, DIV, MOD,
   	LT, GT, LE, GE, EQ, NE, AND_COND, OR_COND, NOT_COND, AND_LOG, OR_LOG, NOT_LOG, BLOCK
@@ -16,6 +18,7 @@ typedef enum {
 typedef struct node {
 	kind k;
 	char id;
+	char* s;
 	int num;
 	struct node *left, *right;
 	struct node * header;	// FUNC node
