@@ -11,7 +11,7 @@ static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
   if ((p = malloc(sizeof(struct node))) == NULL)
     exit(1);
   p->k = k;
-  p->id = c;
+  // p->id = c;
   p->num = n;
   p->left = l;
   p->right = r;
@@ -19,9 +19,10 @@ static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
   p->s = (char *) malloc(strlen(s)); 
   strcpy(p->s, s); // possibly buggy
   return p;
+}
 
 ast ast_funcdef(ast h, ast l, ast r) {
-	return ast_make(FUNC_DEF, NULL, 0, l, r, NULL);
+	return ast_make(FUNCDEF, NULL, 0, l, r, NULL);
 }
 
 ast ast_seq(ast l, ast r) {
@@ -73,10 +74,20 @@ ast ast_exit() {
 }
 
 ast ast_ret(ast l) {
-  return ast_make(RETURN, NULL, 0, l, r, NULL);
+  return ast_make(RETURN, NULL, 0, l, NULL, NULL);
 }
 
-// ast ast_if(ast )
+ast ast_if(ast l, ast r) {
+  return ast_make(IF, NULL, 0, l, r, NULL);
+}
+
+ast ast_elif(ast l, ast r) {
+  return ast_make(ELIF, NULL, 0, l, r, NULL);  
+}
+
+ast ast_else(ast l) {
+  return ast_make(ELSE, NULL, 0, l, NULL, NULL);  
+}
 
 ast ast_loop(ast id_node, ast l) {
   return ast_make(LOOP, (id_node ? id_node->s : NULL), 0, l, NULL, NULL);

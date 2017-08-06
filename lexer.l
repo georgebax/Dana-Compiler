@@ -9,6 +9,7 @@
 #include <string.h>
 #include "ast.h"
 #include "parser.h"
+#include "error.h"
 #include "lexer.h"
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -395,10 +396,10 @@ int check_var_case() {
 	return true;
 }
 
-void fatal(char *msg) {
+/*void fatal(char *msg) {
 	fprintf(stderr, "%s\n", msg);
 	exit(2);
-}
+}*/
 
 void yyerror ( const char *msg ) {
 	fprintf( stderr, "DANA ERROR: %s\n" , msg );

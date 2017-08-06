@@ -20,6 +20,8 @@ void yyerror(const char *msg);
 extern int number_of_lines;
 extern int d[];
 void fatal(char *msg);
+int yylex();     // these lines just 
+int yyrestart(); // to get rid of warnings 
 
 ast t;
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
@@ -202,7 +204,7 @@ stmt //
 |	proc_call { $$ = $1; }
 |	T_exit { $$ = ast_exit(); }
 |	T_return ':' expr { $$ = ast_ret($3); }
-|	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, $4, $5, $6); }
+|	T_if cond ':' block elif_and_block_star else_and_block_req { $$ = ast_if($2, ast_seq($4, ast_seq($5, $6))); }
 |	T_loop id_req ':' block { $$ = ast_loop($2, $4); }
 |	T_break colon_id_req { $$ = ast_break($2); }
 |	T_continue colon_id_req { $$ = ast_cont($2); }
@@ -219,7 +221,7 @@ colon_id_req //
 ;
 
 elif_and_block_star //
-:	T_elif cond ':' block elif_and_block_star { $$ = ast_elif($2, $4, $5); }
+:	T_elif cond ':' block elif_and_block_star { $$ = ast_elif($2, ast_seq($4, $5)); }
 |	/*nothing*/ { $$ = NULL; }
 ;	
 
