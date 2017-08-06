@@ -13,7 +13,7 @@ lexer.c: lexer.l
 lexer.o: lexer.c parser.h
 
 parser.h parser.c: parser.y
-	bison -dv -o parser.c parser.y
+	bison -dv -t -o parser.c parser.y
 
 parser.o: parser.c
 

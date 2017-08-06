@@ -335,7 +335,6 @@ int main(int argc, char *argv[]) {
 		printf("> Indent mode\n");
 	    yyrestart(fp); 
 	    begin_indent_mode();
-	    // BEGIN(INDENT);
 	}
 	else if (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"--help") == 0)
 	    usageInformation();
@@ -344,12 +343,9 @@ int main(int argc, char *argv[]) {
 	    printf("> Default mode\n");
 	    yyrestart(fp);
 	    begin_default_mode();
-	    // BEGIN(BEGINEND);
     }
-
   	if ( yyparse() ) return 1;
-  	// for (int i = 0; i < 1024; i++) printf("%d", d[i]); // print depth array
-	printf( "COMPILATION SUCCESSFUL!!\n" );
+  	printf( "COMPILATION SUCCESSFUL!!\n" );
 	printf( "Total number of lines : %d\n" , number_of_lines );
 	return 0;
 }

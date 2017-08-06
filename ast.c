@@ -8,16 +8,22 @@
 static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
   ast p;
   // memset(p, 0, sizeof(node)); // size of ast node
-  if ((p = malloc(sizeof(struct node))) == NULL)
+  if ((p = malloc(sizeof(struct node))) == NULL) {
+    fatal( "Out of memory!" );
     exit(1);
+  }
   p->k = k;
   // p->id = c;
   p->num = n;
   p->left = l;
   p->right = r;
   p->type = t;
-  p->s = (char *) malloc(strlen(s)); 
-  strcpy(p->s, s); // possibly buggy
+  if (s) {
+    printf("s = %s\n", s);
+    p->s = (char *) malloc(sizeof(char) * strlen(s)); 
+    strcpy(p->s, s); 
+  }
+  printf("KIND = %ud\n", k);
   return p;
 }
 
