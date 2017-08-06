@@ -40,12 +40,20 @@ ast ast_type(Type datatype, ast bics) { // brackets_int_const_star
   return ast_make(TYPE, NULL, 0, bics, NULL, datatype);
 }
 
-ast ast_fpar_type(Type datatype, ast l) {
+ast ast_fpartype(Type datatype, ast l) {
   return ast_make(FPARTYPE, NULL, 0, l, NULL, datatype);
 }
 
 ast ast_localdef(ast l, kind k) {
   return ast_make(k, NULL, 0, l, NULL, NULL);
+}
+
+ast ast_funcdecl(ast header) {
+  return ast_make(FUNCDECL, NULL, 0, header, NULL, NULL);
+}
+
+ast ast_vardef(ast l, ast r) {
+  return ast_make(VARDEF, NULL, 0, l, r, NULL);
 }
 
 ast ast_skip() {
@@ -70,16 +78,20 @@ ast ast_ret(ast l) {
 
 // ast ast_if(ast )
 
-ast ast_loop(char *id, ast l) {
-  return ast_make(LOOP, id, 0, l, NULL, NULL);
+ast ast_loop(ast id_node, ast l) {
+  return ast_make(LOOP, (id_node ? id_node->s : NULL), 0, l, NULL, NULL);
 }
 
-ast ast_break(char *id) {
- return ast_make(BREAK, id, 0, NULL, NULL, NULL); 
+ast ast_break(ast id_node) {
+ return ast_make(BREAK, (id_node ? id_node->s : NULL), 0, NULL, NULL, NULL); 
 }
 
-ast ast_break(char *id) {
- return ast_make(CONT, id, 0, NULL, NULL, NULL); 
+ast ast_cont(ast id_node) {
+ return ast_make(CONT, (id_node ? id_node->s : NULL), 0, NULL, NULL, NULL); 
+}
+
+ast ast_id(char *id) {
+  return ast_make(ID, id, 0, NULL, NULL, NULL);
 }
 
 // elseif, etc
