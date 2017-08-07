@@ -9,6 +9,7 @@
 #include <string.h>
 #include "ast.h"
 #include "parser.h"
+#include "error.h"
 #include "lexer.h"
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -22,6 +23,7 @@ void begin_indent_mode();
 void begin_default_mode();
 int check_def_case();
 int check_var_case();
+int htoi(char *hex);
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -206,66 +208,6 @@ var                                                             { return T_var; 
 
 														      	}
 
-																/*{ number_of_lines++;
-														          tabs = count_tabs( yytext ); 
-																  printf(">>>> indentation_depth = %d\n", indentation_depth);
-																  printf("tabs = %d in line %d\n", tabs, number_of_lines);
-														          if ( tabs <= def_depth && end_returned ) {
-  																    indentation_depth = tabs;
-																  	no_of_begins++;
-																  	number_of_lines--; // because the newline will be parsed twice ;)
-																  	printf("> Returning begin due to mad case, @ %d\n", number_of_lines);
-																  	printf(">> no_of_begins = %d\n", no_of_begins);
-																  	def_depth--; // this PROBABLY does the job ;)
-																  	end_returned = false; // mark that we will need to return an end to that begin
-																  	d[ indentation_depth ] = 1; // BLOCK OPENED due to mad case ;)
-																  	return T_begin; 														          	
-														          }
-																  if ( tabs > indentation_depth ) { 
-																  	indentation_depth = tabs;
-																  	if (check_def_case()) {
-																  	  puts(">>> Nested def found!");
-																  	  def_depth = tabs;
-																  	  printf("> def depth now set to %d\n", def_depth);
-																  	  return T_ind_def;
-																  	}
-																  	else if (check_var_case()) {
-																  	  puts(">>> ind var");
-																  	}
-																  	else { // normal case, at this point we are in a block!
-																	  no_of_begins++;
-																	  printf("> Returning (normal) begin, @ %d\n", number_of_lines);
-																	  printf(">> no_of_begins = %d\n", no_of_begins);
-																	  d[ indentation_depth ] = 1;
-																	  return T_begin; 
-																  	}
-																  }
-																  else if ( tabs < indentation_depth ) {
-																  	//printf("end\n");
-																  	printf("indentation_depth set from %d to %d\n", indentation_depth, tabs);
-  																    indentation_depth = tabs;
-																  	printf("> Returning end,   @ %d\n", number_of_lines);
-																  	printf(">> no_of_ends = %d\n", no_of_ends);
-
-																  	if ( tabs <= def_depth ) {
-																	  printf("in new case\n");
-																	  printf("unputting %d tabs\n", tabs);
-																	  for ( i = 0; i < tabs; i++ ) 
-																	  	unput('\t');
-																	  unput('\n');	
-																	  end_returned = true;										
-  																  	  no_of_ends++;
-  																  	  d[ indentation_depth ] = 0; // BLOCK CLOSED at this depth!
-
-																  	  return T_end;
-																  	}	 
-																  }
-																  else {  // tabs == indentation_depth  
-																    end_returned = false;
-																    printf("> No indent action taken!\n");
-																  }
-																}*/
-
 
 <INDENT><<EOF>>													{ printf("Encountered EOF\n");
 																  if ( no_of_begins > no_of_ends ) {
@@ -280,7 +222,7 @@ var                                                             { return T_var; 
 <BEGEND>\n{T}+													{ number_of_lines++; }
 
 
-\'{HEN}\'														{ return T_hex; }
+\'{HEN}\'														{ yylval.i = htoi(yytext); return T_hex; }
 
 
 \'{ESC}\'														{ return T_escape; }
@@ -300,10 +242,8 @@ var                                                             { return T_var; 
 <COMMENT>"(*" 													{ nesting++; }
 <COMMENT>"*)"		  				               	            { nesting--; 
 																  if ( nesting == 0 ) {
-																  	if (case_id == 0)
-																  	  BEGIN(BEGEND); 
-																  	else
-																  	  BEGIN(INDENT);
+																  	if (case_id == 0) BEGIN(BEGEND); 
+																  	else BEGIN(INDENT);
 																  }
 																}
 
@@ -379,6 +319,37 @@ int count_tabs( char *txt ) {
 	return num_of_tabs;
 }
 
+int switch_hex( char c ) {
+	switch(c) {
+		case 'a':
+		case 'A':
+			return 10;
+		case 'b':
+		case 'B':
+			return 11;
+		case 'c':
+		case 'C':
+			return 12;
+		case 'd':
+		case 'D':
+			return 13;
+		case 'e':
+		case 'E':
+			return 14;
+		case 'f':
+		case 'F':
+			return 15;
+		default : {
+			char temp[2] = {c, '\0'};
+			return atoi(temp);
+		}
+	}
+}
+
+int htoi( char *hex ) { // converts '/x{HEX}{HEX}/' to integer
+	return switch_hex(yytext[3]) * 16 + switch_hex(yytext[4]);
+}
+
 int check_def_case() {
 	char c;
 	if ( ((c = input()) == EOF) || (c != 'd') ) {
@@ -425,10 +396,10 @@ int check_var_case() {
 	return true;
 }
 
-void fatal(char *msg) {
+/*void fatal(char *msg) {
 	fprintf(stderr, "%s\n", msg);
 	exit(2);
-}
+}*/
 
 void yyerror ( const char *msg ) {
 	fprintf( stderr, "DANA ERROR: %s\n" , msg );

@@ -13,11 +13,11 @@ lexer.c: lexer.l
 lexer.o: lexer.c parser.h
 
 parser.h parser.c: parser.y
-	bison -dv -o parser.c parser.y
+	bison -dv -t -o parser.c parser.y
 
 parser.o: parser.c
 
-dana: lexer.o parser.o
+dana: lexer.o parser.o ast.o general.o error.o symbol.o
 	$(CC) $(CFLAGS) -o dana $^ -lfl
 
 install: dana

@@ -9,4 +9,5 @@ parser.h
 parser.c
 lexer.c
 lex.yy.c
+lexer
 dana
