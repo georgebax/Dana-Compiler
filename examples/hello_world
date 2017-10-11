@@ -1,4 +1,6 @@
 def hello
 begin
 	writeString: "hello world"
+	writeString: "hello world"
+	writeString: "hello world"
 end

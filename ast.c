@@ -24,6 +24,10 @@ static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
     strcpy(p->s, s); 
   }
   printf("KIND = %ud\n", k);
+  // if (k == SEQ) {
+    // printf("seq L -> %ud\n", p->left->k);
+    // printf("seq R -> %ud\n", p->right->k);
+  // }
   return p;
 }
 
