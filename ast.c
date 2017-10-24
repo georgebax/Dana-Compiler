@@ -23,16 +23,14 @@ static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
     p->s = (char *) malloc(sizeof(char) * strlen(s)); 
     strcpy(p->s, s); 
   }
-  printf("KIND = %ud\n", k);
-  // if (k == SEQ) {
-    // printf("seq L -> %ud\n", p->left->k);
-    // printf("seq R -> %ud\n", p->right->k);
-  // }
+  printf("KIND = %u\n", k);
   return p;
 }
 
 ast ast_funcdef(ast h, ast l, ast r) {
-	return ast_make(FUNCDEF, NULL, 0, l, r, NULL);
+	ast p = ast_make(FUNCDEF, NULL, 0, l, r, NULL); 
+  p->header = h;
+  return p;
 }
 
 ast ast_seq(ast l, ast r) {
