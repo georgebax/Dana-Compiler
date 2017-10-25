@@ -33,7 +33,7 @@ ast t;
   ast a;
   char c;
   int i;
-  char * s;
+  char* s;
   Type t;
 }
 
@@ -345,6 +345,7 @@ int main(int argc, char *argv[]) {
 	    begin_default_mode();
     }
   	if ( yyparse() ) return 1;
+  	// ast_sem(t);
   	printf( "COMPILATION SUCCESSFUL!!\n" );
 	printf( "Total number of lines : %d\n" , number_of_lines );
 	return 0;
