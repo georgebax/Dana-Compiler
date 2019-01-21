@@ -15,13 +15,15 @@
 #define true  1
 #define false 0
 
-
-void yyerror(const char *msg);
 extern int number_of_lines;
 extern int d[];
+
+void yyerror(const char *msg);
 void fatal(char *msg);
 int yylex();     // these lines just 
 int yyrestart(); // to get rid of warnings 
+int ast_show(ast t);
+int ast_sem(ast t);
 
 ast t;
 /*----------------------------------------Definitions--------------------------------------------------------------------------------------------------------------------*/
@@ -33,7 +35,7 @@ ast t;
   ast a;
   char c;
   int i;
-  char * s;
+  char* s;
   Type t;
 }
 
@@ -185,9 +187,9 @@ brackets_int_const_star //
 ;
 
 local_def //
-:	func_def  { $$ = ast_localdef($1, FUNCDEF); }
-|	func_decl { $$ = ast_localdef($1, FUNCDECL); }
-|	var_def   { $$ = ast_localdef($1, VARDEF); }
+:	func_def  { $$ = $1; }
+|	func_decl { $$ = $1; }
+|	var_def   { $$ = $1; }
 ;
 
 func_decl //
@@ -200,7 +202,7 @@ var_def //
 
 stmt // 
 :	T_skip { $$ = ast_skip(); }
-|	l_value T_assign expr { $$ = ast_ass($1, $3); } // the name *probably* needs to be changed....
+|	l_value T_assign expr { $$ = ast_ass($1, $3); }
 |	proc_call { $$ = $1; }
 |	T_exit { $$ = ast_exit(); }
 |	T_return ':' expr { $$ = ast_ret($3); }
@@ -259,12 +261,12 @@ expr_comma_expr_req //
 
 comma_expr_star // 
 :	/*nothing*/  				{ $$ = NULL; }
-|	',' expr comma_expr_star	{ $$ = ast_seq($2, $3); } // experimental...
+|	',' expr comma_expr_star	{ $$ = ast_seq($2, $3); }
 ;
 
 l_value // 
-:	T_id 				{ $$ = ast_lval(ast_id($1), NULL, "Id"); }
-|	T_string 			{ $$ = ast_lval(ast_id($1), NULL, "String"); }
+:	T_id 				{ $$ = ast_lval($1, NULL, "Id"); }
+|	T_string 			{ $$ = ast_lval($1, NULL, "String"); }
 |	l_value '[' expr ']'{ $$ = ast_lval($1, $3, "Element"); }
 ;
 
@@ -345,6 +347,8 @@ int main(int argc, char *argv[]) {
 	    begin_default_mode();
     }
   	if ( yyparse() ) return 1;
+  	ast_show(t); // shows information about the AST tree.
+ //	ast_sem(t); // NOT implemented
   	printf( "COMPILATION SUCCESSFUL!!\n" );
 	printf( "Total number of lines : %d\n" , number_of_lines );
 	return 0;

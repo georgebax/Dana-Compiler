@@ -19,16 +19,20 @@ static ast ast_make (kind k, char* s, int n, ast l, ast r, Type t) {
   p->right = r;
   p->type = t;
   if (s) {
-    printf("s = %s\n", s);
+    // printf("s = %s\n", s);
+    printf("strlen(%s) = %lu\n", s, strlen(s));
     p->s = (char *) malloc(sizeof(char) * strlen(s)); 
     strcpy(p->s, s); 
   }
-  printf("KIND = %ud\n", k);
+  // printf("KIND = %u\n", k);
   return p;
 }
 
 ast ast_funcdef(ast h, ast l, ast r) {
-	return ast_make(FUNCDEF, NULL, 0, l, r, NULL);
+	ast p = ast_make(FUNCDEF, NULL, 0, l, r, NULL); 
+  p->header = h;
+  printf("header : %s\n", h->s);
+  return p;
 }
 
 ast ast_seq(ast l, ast r) {
@@ -36,6 +40,8 @@ ast ast_seq(ast l, ast r) {
 }
 
 ast ast_header(char *id, ast idr, ast fpr) {
+  // puts("makin header\n");
+  // printf("%s", id);
   return ast_make(HEADER, id, 0, idr, fpr, NULL);
 }
 
@@ -122,8 +128,8 @@ ast ast_funccall(char *id, ast l) {
   return ast_make(FUNCCALL, id, 0, l, NULL, NULL);
 }
 
-ast ast_lval(ast l, ast r, char *type) {
-  return ast_make(LVAL, type, 0, l, r, NULL);
+ast ast_lval(char *id, ast r, Type t) {
+  return ast_make(LVAL, id, 0, NULL, r, NULL);
 }
 
 ast ast_const(int n) {
@@ -142,3 +148,129 @@ ast ast_op(ast l, kind k, ast r) {
 ast ast_bool(int value) {
   return ast_make(BOOL, NULL, value, NULL, NULL, NULL);
 }
+
+
+////////////////////////////////////////////////////
+
+
+void ast_show(ast t) {
+  if(t == NULL)
+    return;
+  printf(">> KIND = %d\n", t->k);
+  if (t->k == 36) printf(":%d\n", t->k); 
+  if (t->left)  {
+    printf("~ has left \n");
+    printf("~ of kind: %u\n", t->left->k);
+  }
+  if (t->right) {
+    printf("~ has right \n");
+    printf("~ of kind: %u\n", t->right->k);
+  }
+  ast_show(t->left);
+  ast_show(t->right);
+  printf("---\nEnd of %d\n", t->k);
+}
+
+
+
+////////////////////////////////////////////////////
+
+// void ast_sem(ast t) {
+//   printf("Semantic analysis of node: %d\n", t->k);
+//   if (t == NULL) return;
+//   switch(t->k) {
+//     case FUNCDEF:
+//       // TODO TODO TODO TODO
+//       // printf("header = \n", t->header->s);
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case SEQ:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case HEADER:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case IDR: // is_datatype_req
+//       return;
+//     case TYPE:
+//       ast_sem(t->left);
+//       return;
+//     case FPARTYPE:
+//       // TODO TODO TODO TODO
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case VARDEF:
+//       ast_sem(t->left);
+//       return;
+//     case SKIP:
+//       return;
+//     case ASSIGN:
+//       // TODO TODO TODO TODO
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case PROCCALL:
+//       // TODO TODO TODO TODO
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case EXIT:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case RETURN:
+//       ast_sem(t->left);
+//       return;
+//     case IF:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case ELIF:    
+//       ast_sem(t->left);
+//       if (!equalType(t->left->type, typeBoolean))
+//         error("if expects a boolean condition");
+//       ast_sem(t->right);
+//       return;
+//     case ELSE:
+//       ast_sem(t->left);
+//       return;
+//     case LOOP:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case BREAK:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case CONT:
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case ID:
+//       // TODO
+//       return;
+//     case BLOCK:
+//       ast_sem(t->left);
+//       return;
+//     case FUNCCALL:
+//       // TODO TODO TODO TODO
+//       ast_sem(t->left);
+//       return;
+//     case LVAL:
+//       printf("lval %s\n", t->s);
+//       ast_sem(t->left);
+//       ast_sem(t->right);
+//       return;
+//     case NUM_CONST:
+//       // SIZE CHECK POSSIBLE ???
+//       return;
+//     case CHAR_CONST:
+//       return;
+//     case BOOL:
+//       return;
+//   }
+// }

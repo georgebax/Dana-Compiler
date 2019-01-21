@@ -5,14 +5,14 @@
 
 #define STRMAX 128
 
-typedef enum {
-	FUNCDEF, AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
-	LPAR, RPAR, LBRAC, RBRAC, COMMA, COLON, ASSIGN,
-	HEADER, IDR, TYPE, FPARTYPE, PROCCALL, FUNCCALL, LVAL, BOOL, FUNCDECL, VARDEF,
-	PRINT, FOR, SEQ,
-  	ID, NUM_CONST, CHAR_CONST, STRING, HEX, ESC, 
-  	PLUS, MINUS, TIMES, DIV, MOD,
-  	LT, GT, LE, GE, EQ, NE, AND_COND, OR_COND, NOT_COND, AND_LOG, OR_LOG, NOT_LOG, BLOCK
+typedef enum { // 10 in each line, major feature...
+	FUNCDEF, AS, BREAK, CONT, DEF, INT, BYTE, DECL, IF, ELIF, 
+	ELSE, EXIT, TRUE, FALSE, IS, LOOP, REF, RETURN, SKIP, VAR,
+	LPAR, RPAR, LBRAC, RBRAC, COMMA, COLON, ASSIGN, HEADER, IDR, TYPE,
+	FPARTYPE, PROCCALL, FUNCCALL, LVAL, BOOL, FUNCDECL, VARDEF,	PRINT, FOR, SEQ,
+  	ID, NUM_CONST, CHAR_CONST, STRING, HEX, ESC, PLUS, MINUS, TIMES, DIV, 
+  	MOD, LT, GT, LE, GE, EQ, NE, AND_COND, OR_COND, NOT_COND, 
+  	AND_LOG, OR_LOG, NOT_LOG, BLOCK
 } kind;
 
 typedef struct node {
@@ -25,7 +25,7 @@ typedef struct node {
 	int nesting_diff;  		// ID and LET nodes
 	int offset;        		// ID and LET nodes
 	int num_vars;      		// BLOCK node
-	Type type;         		// HEADER node
+	Type type;         		
 } *ast;
 
 ast ast_funcdef(ast h, ast l, ast r);
@@ -51,7 +51,7 @@ ast ast_cont(ast id_node);
 ast ast_id(char *id);
 ast ast_block(ast l);
 ast ast_funccall(char *id, ast l);
-ast ast_lval(ast l, ast r, char *type);
+ast ast_lval(char *id, ast r, Type t);
 ast ast_const(int n);
 ast ast_charconst(char c);
 ast ast_op(ast l, kind k, ast r);
